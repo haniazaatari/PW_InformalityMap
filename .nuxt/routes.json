@@ -1,0 +1,14 @@
+[
+  {
+    "name": "index-en",
+    "path": "/index-en",
+    "component": "C:\\\\Users\\\\hania\\\\Documents\\\\PW_InformalityMap\\\\pages\\\\index-en.vue",
+    "chunkName": "pages/index-en"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "C:\\\\Users\\\\hania\\\\Documents\\\\PW_InformalityMap\\\\pages\\\\index.vue",
+    "chunkName": "pages/index"
+  }
+]
