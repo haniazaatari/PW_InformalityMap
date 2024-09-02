@@ -43,27 +43,6 @@
           <!-- <script src="https://unpkg.com/vue/dist/vue.min.js"></script> -->
         </p>
       </div>
-
-      <!-- <div class="boxB" :class="{ minimized: isBoxMinimized }" dir="rtl"> -->
-      <!-- legend items -->
-      <!-- <div class="legend" :class="{ minimized: isBoxMinimized }">
-          <b> يمكن اختيار الأشكال/الأهداف </b>
-          <div
-            class="legend-item"
-            v-for="(item, index) in legendItems"
-            :key="index"
-            :data-label="item.label"
-            :class="{ clicked: item.clicked }"
-            @click="handleCategoryClick(item.label)"
-          >
-            <img :src="item.icon" :alt="item.label" class="legend-item-img" />-->
-      <!-- Add a space between img and label -->
-      <!-- {{ "   " }}
-            <label>{{ item.label }}</label
-            >{{ "   " }}
-          </div>
-        </div>
-      </div> -->
       <div class="boxC" id="lastUpdatedDiv"></div>
     </div>
   </main>
@@ -1797,7 +1776,7 @@ body {
   position: absolute;
   /* left: 85%; */
   left: 40px;
-  bottom: 5%;
+  bottom: 10%;
   font-weight: bold;
 
   display: flex;
@@ -1806,7 +1785,7 @@ body {
   z-index: 100000;
   flex-flow: column;
   align-content: flex-start !important;
-  color: #fff;
+  color: #ffffff;
   /* top: 37%; */
   /* margin: 0.5rem; */
   /* background-color: rgba(255, 255, 255, 0.288); */
