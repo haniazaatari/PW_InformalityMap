@@ -92,8 +92,8 @@ export default {
 
     setTimeout(() => {
       map.flyTo({
-        zoom: 9.5,
-        speed: 0.3,
+        center: [35.4955, 33.8888],
+        zoom: 12,
       });
     }, 2000);
 
