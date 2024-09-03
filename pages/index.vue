@@ -1,23 +1,42 @@
 <template>
   <main>
     <div id="map" ref="map">
-      <div class="box" id="contentBox">
+      <div class="box" id="contentBox1">
         <p class="note"><strong>إختر/ي المدينة</strong></p>
-
-        <nav id="filter-group" class="filter-group"></nav>
-        <div id="menu-navigation">
-          <button id="prevButton" disabled>السابق</button>
-          <button id="nextButton">التالي</button>
+        <div class="boxB">
+          <nav id="filter-group" class="filter-group"></nav>
+          <div id="menu-navigation" class="menu-navigation-class">
+            <button id="prevButton1" class="navButton prevButton" disabled>
+              السابق
+            </button>
+            <button id="nextButton1" class="navButton nextButton">
+              التالي
+            </button>
+          </div>
         </div>
+      </div>
+      <div class="box" id="contentBox2" style="display: none">
+        HEllooooo
+        <div class="boxB">
+          <div id="menu-navigation" class="menu-navigation-class">
+            <button id="prevButton2" class="navButton prevButton2">
+              السابق
+            </button>
+            <button id="nextButton2" class="navButton nextButton2" disabled>
+              التالي
+            </button>
+          </div>
+        </div>
+
+        <!-- Other content goes here, initially hidden -->
       </div>
 
       <div class="box-row">
-        <p class="boxA">
-          تم الإنشاء بواسطة استوديو أشغال عامّة CC
-          <!-- <script src="https://unpkg.com/vue/dist/vue.min.js"></script> -->
-        </p>
+        <p class="boxA">تم الإنشاء بواسطة استوديو أشغال عامّة CC</p>
       </div>
-      <div class="boxC" id="lastUpdatedDiv"></div>
+      <div class="boxC" id="lastUpdatedDiv">
+        آخر تحديث: ٣ أيلول ٢٠٢٤ في ۰۱:٣٠ ص
+      </div>
     </div>
   </main>
 </template>
@@ -85,172 +104,153 @@ export default {
 
     map.on("load", () => {
       try {
-        map.addSource("places", {
-          type: "geojson",
-          generateId: true,
-          data: "./target.geojson",
-        });
-
-        map.addLayer({
-          id: "poly",
-          type: "fill",
-          source: "places", // reference the data source
-          layout: {},
-          paint: {
-            "fill-color": "#f48282", // blue color fill
-            "fill-opacity": 0.4,
-          },
-        });
-
-        // Add a grey outline around the polygon.
-        map.addLayer({
-          id: "outline",
-          type: "line",
-          source: "places",
-          layout: {},
-          paint: {
-            "line-color": "black",
-            "line-width": 0.05,
-          },
-        });
-
-        // Load GeoJSON data using Fetch API
-        fetch("./merged_counts.geojson")
-          .then((response) => {
-            // Check if response is successful
-            if (!response.ok) {
-              throw new Error("Failed to load GeoJSON data.");
-            }
-            // Parse JSON data
-            return response.json();
-          })
-          .then((data) => {
-            // Initialize markers array
-            map.markers = [];
-            // Check if data contains features
-            if (data && data.features && data.features.length > 0) {
-              data.features.forEach((feature) => {
-                // Extract strike type properties
-                const objectId = feature.properties.OBJECTID1;
-                const strikeTypes = feature.properties;
-
-                // Create a marker for each strike type
-                Object.entries(strikeTypes).forEach(([strikeType, count]) => {
-                  // Skip if the strike type is not relevant or has a count of 0
-                  if (
-                    strikeType === "OBJECTID1" ||
-                    strikeType === "index" ||
-                    count === 0
-                  ) {
-                    return;
-                  }
-
-                  // Get color and marker HTML based on count
-                  // const markerColor = getColorForCount(strikeType);
-                  const markerHTML = setMarkerHTML(count, strikeType);
-
-                  // Create a marker and add it to the map
-                  if (markerHTML) {
-                    const marker = new mapboxgl.Marker({
-                      element: markerHTML,
-                    })
-                      .setLngLat(feature.geometry.coordinates)
-                      .addTo(map);
-                    // console.log(
-                    //   feature.properties.OBJECTID1,
-                    //   ",",
-                    //   feature.geometry.coordinates,
-                    //   ",",
-                    //   count,
-                    //   ",",
-                    //   strikeType
-                    // );
-
-                    //added the category
-                    // Set a data-category attribute on the marker element
-                    marker
-                      .getElement()
-                      .setAttribute("data-category", strikeType);
-
-                    // Store marker in markers array
-                    map.markers.push(marker);
-                  }
-                });
-              });
-
-              // console.log("Strike Type Counts:", strikeTypeCounts);
-            } else {
-              console.warn("No features found in the GeoJSON data.");
-            }
-          });
-
-        // Function to update the sync date
-        function updateSyncDate() {
-          // Get the current date and time
-          const currentDate = new Date();
-
-          // Format the date as needed (e.g., 'YYYY-MM-DD HH:mm:ss')
-          const formattedDate =
-            currentDate.toISOString().split("T")[0] +
-            " " +
-            currentDate.toTimeString().split(" ")[0];
-
-          // Save the formatted date to localStorage
-          localStorage.setItem("lastSyncDate", formattedDate);
-
-          // Update the displayed date
-          document.getElementById(
-            "lastUpdatedDiv"
-          ).innerText = `Last Synced: ${formattedDate}`;
-        }
-
-        // Function to load the last sync date from localStorage
-        function loadLastSyncDate() {
-          const lastSyncDate = localStorage.getItem("lastSyncDate");
-
-          // If there is a saved sync date, display it; otherwise, show a default message
-          if (lastSyncDate) {
-            document.getElementById(
-              "lastUpdatedDiv"
-            ).innerText = `Last Synced: ${lastSyncDate}`;
-          } else {
-            document.getElementById("lastUpdatedDiv").innerText =
-              "No sync has occurred yet.";
+        //to keep the villages name on the top
+        const layers = map.getStyle().layers;
+        // Find the index of the first symbol layer in the map style.
+        let firstSymbolId;
+        for (const layer of layers) {
+          if (layer.type === "symbol") {
+            firstSymbolId = layer.id;
+            break;
           }
         }
 
-        // Call the load function on page load to display the last sync date
-        window.addEventListener("DOMContentLoaded", loadLastSyncDate);
+        //added informality map
+        map.addSource("places", {
+          type: "geojson",
+          generateId: true,
+          data: "./informalitymap.geojson",
+        });
 
-        // // Function to update the date and time
-        // function updateLastUpdatedDate() {
-        //   const lastUpdatedDiv = document.getElementById("lastUpdatedDiv");
+        map.addLayer(
+          {
+            id: "poly",
+            type: "fill",
+            source: "places", // reference the data source
+            layout: {},
+            paint: {
+              "fill-color": [
+                "rgb",
+                ["%", ["*", ["get", "fid"], 110], 255], // Red channel based on fid
+                ["%", ["*", ["get", "fid"], 330], 255], // Green channel based on fid
+                ["%", ["*", ["get", "fid"], 550], 255], // Blue channel based on fid
+              ],
+              "fill-opacity": 0.7,
+            },
+          },
+          firstSymbolId
+        );
+        // map.addLayer(
+        //   {
+        //     id: "poly",
+        //     type: "fill",
+        //     source: "places", // reference the data source
+        //     layout: {},
+        //     // paint: {
+        //     //   "fill-color": "#f48282", // blue color fill
+        //     //   "fill-opacity": 0.4,
+        //     // },
+        //     paint: {
+        //       "fill-color": [
+        //         "match",
+        //         ["get", "fid"], // Get the 'fid' property of the feature
+        //         ...Object.entries(colors).flat(), // Spread the color array
+        //         "#cccccc", // Default color if 'fid' doesn't match any case
+        //       ],
+        //       "fill-opacity": 0.4,
+        //     },
+        //   },
+        //   firstSymbolId
+        // );
 
-        //   // Get the current date and time
-        //   const now = new Date();
+        // // Add a grey outline around the polygon.
+        // map.addLayer({
+        //   id: "outline",
+        //   type: "line",
+        //   source: "places",
+        //   layout: {},
+        //   paint: {
+        //     "line-color": "black",
+        //     "line-width": 0.05,
+        //   },
+        // });
 
-        //   // Format the date and time (e.g., "September 2, 2024, 14:30")
-        //   const options = {
-        //     year: "numeric",
-        //     month: "long",
-        //     day: "numeric",
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        //   };
-        //   const formattedDate = now.toLocaleDateString("ar-LB", options); // 'ar-EG' for Arabic formatting
+        // // Load GeoJSON data using Fetch API
+        // fetch("./merged_counts.geojson")
+        //   .then((response) => {
+        //     // Check if response is successful
+        //     if (!response.ok) {
+        //       throw new Error("Failed to load GeoJSON data.");
+        //     }
+        //     // Parse JSON data
+        //     return response.json();
+        //   })
+        //   .then((data) => {
+        //     // Initialize markers array
+        //     map.markers = [];
+        //     // Check if data contains features
+        //     if (data && data.features && data.features.length > 0) {
+        //       data.features.forEach((feature) => {
+        //         // Extract strike type properties
+        //         const objectId = feature.properties.OBJECTID1;
+        //         const strikeTypes = feature.properties;
 
-        //   // Update the inner HTML of the div with the formatted date
-        //   lastUpdatedDiv.innerHTML = `آخر تحديث: ${formattedDate}`;
-        // }
+        //         // Create a marker for each strike type
+        //         Object.entries(strikeTypes).forEach(([strikeType, count]) => {
+        //           // Skip if the strike type is not relevant or has a count of 0
+        //           if (
+        //             strikeType === "OBJECTID1" ||
+        //             strikeType === "index" ||
+        //             count === 0
+        //           ) {
+        //             return;
+        //           }
 
-        // // Example call to the function when updating
-        // updateLastUpdatedDate();
+        //           // Get color and marker HTML based on count
+        //           // const markerColor = getColorForCount(strikeType);
+        //           const markerHTML = setMarkerHTML(count, strikeType);
+
+        //           // Create a marker and add it to the map
+        //           if (markerHTML) {
+        //             const marker = new mapboxgl.Marker({
+        //               element: markerHTML,
+        //             })
+        //               .setLngLat(feature.geometry.coordinates)
+        //               .addTo(map);
+        //             // console.log(
+        //             //   feature.properties.OBJECTID1,
+        //             //   ",",
+        //             //   feature.geometry.coordinates,
+        //             //   ",",
+        //             //   count,
+        //             //   ",",
+        //             //   strikeType
+        //             // );
+
+        //             //added the category
+        //             // Set a data-category attribute on the marker element
+        //             marker
+        //               .getElement()
+        //               .setAttribute("data-category", strikeType);
+
+        //             // Store marker in markers array
+        //             map.markers.push(marker);
+        //           }
+        //         });
+        //       });
+
+        // console.log("Strike Type Counts:", strikeTypeCounts);
+        //   } else {
+        //     console.warn("No features found in the GeoJSON data.");
+        //   }
+        // });
 
         function initializeCitySelection() {
           const filterGroup = document.getElementById("filter-group");
           // Create and configure the city dropdown
           const citySelect = document.createElement("select");
           citySelect.id = "citySelect";
+          citySelect.classList.add("city-dropdown"); // Correct way to add a class
           citySelect.style.marginTop = "20px";
           citySelect.addEventListener("change", updateMapData);
 
@@ -263,7 +263,7 @@ export default {
             "زحلة",
             "جونية",
             "بعبدا",
-            "بيبلوس",
+            "جبيل",
             "بعلبك",
             "البترون",
           ];
@@ -275,7 +275,7 @@ export default {
           //   "Zahle",
           //   "Jounieh",
           //   "Baabda",
-          //   "Byblos",
+          //   "Jbeil",
           //   "Baalbek",
           //   "Batroun",
           // ];
@@ -291,19 +291,19 @@ export default {
           // Append the city dropdown to the filter group
           filterGroup.appendChild(citySelect);
 
-          // Coordinates for each city in Lebanon
-          const cityCoordinates = {
-            بيروت: [35.4955, 33.8888],
-            طرابلس: [35.8456, 34.4367],
-            صيدا: [35.3692, 33.557],
-            صور: [35.1971, 33.2712],
-            زحلة: [35.9033, 33.8462],
-            جونية: [35.6435, 33.9808],
-            بعبدا: [35.5426, 33.8356],
-            جبيل: [35.6482, 34.1207],
-            بعلبك: [36.2045, 34.0059],
-            البترون: [35.6588, 34.2557],
-          };
+          // // Coordinates for each city in Lebanon
+          // const cityCoordinates = {
+          //   بيروت: [35.4955, 33.8888],
+          //   طرابلس: [35.8456, 34.4367],
+          //   صيدا: [35.3692, 33.557],
+          //   صور: [35.1971, 33.2712],
+          //   زحلة: [35.9033, 33.8462],
+          //   جونية: [35.6435, 33.9808],
+          //   بعبدا: [35.5426, 33.8356],
+          //   جبيل: [35.6482, 34.1207],
+          //   بعلبك: [36.2045, 34.0059],
+          //   البترون: [35.6588, 34.2557],
+          // };
 
           // const cityCoordinates = {
           //   Beirut: [35.4955, 33.8888],
@@ -318,123 +318,224 @@ export default {
           //   Batroun: [35.6588, 34.2557],
           // };
 
-          // Event listener for city dropdown
-          citySelect.addEventListener("change", (event) => {
-            const selectedCity = event.target.value;
+          // // Event listener for city dropdown
+          // citySelect.addEventListener("change", (event) => {
+          //   const selectedCity = event.target.value;
 
-            if (cityCoordinates[selectedCity]) {
-              const [lng, lat] = cityCoordinates[selectedCity];
+          //   if (cityCoordinates[selectedCity]) {
+          //     const [lng, lat] = cityCoordinates[selectedCity];
 
-              // Set the map view to the selected city's coordinates
-              map.flyTo({
-                center: [lng, lat],
-                zoom: 12, // Adjust zoom level as needed
-              });
-            }
-          });
-
-          // Initialize buttons
-          const prevButton = document.getElementById("prevButton");
-          const nextButton = document.getElementById("nextButton");
-
-          prevButton.addEventListener("click", () => navigateCity(-1));
-          nextButton.addEventListener("click", showNextContent);
-          updateButtons(); // Initial button state
-        }
-        initializeCitySelection();
-
-        // Function to handle "Next" button click
-        function showNextContent() {
-          const contentBox = document.getElementById("contentBox");
-
-          // Overwrite the content of the box with new content
-          contentBox.innerHTML = `
-        <div class="new-content">
-            <p>هذه هي المحتويات الجديدة</p>
-            <!-- Add any other new content or elements here -->
-            <button id="backButton">عودة</button>
-        </div>
-    `;
-
-          // Add event listener for "Back" button
-          document
-            .getElementById("backButton")
-            .addEventListener("click", () => {
-              // Call the initialize function to reset content to the original
-              contentBox.innerHTML = `
-            <p class="note"><strong>إختر/ي المدينة</strong></p>
-            <nav id="filter-group" class="filter-group"></nav>
-            <div id="city-navigation">
-                <button id="prevButton" disabled>السابق</button>
-                <button id="nextButton">التالي</button>
-            </div>
-        `;
-              initializeCitySelection(); // Reinitialize the original content
-            });
-        }
-
-        function updateMapData() {
-          this.map = map; // Assign map instance to this.map
-
-          const selectedCity = document.getElementById("citySelect").value;
-          if (cityCoordinates[selectedCity]) {
-            const [lng, lat] = cityCoordinates[selectedCity];
-            map.flyTo({ center: [lng, lat], zoom: 12 });
-          }
-
-          // Function to apply category filter
-          const applyCategoryFilter = (selectedCategories) => {
-            categoryFilter = [
-              "any",
-              selectedCategories.map((category) => [
-                "==",
-                ["get", "Strike_Type"],
-                category,
-              ]),
-              selectedCategories.map((category) => [
-                "==",
-                ["get", "Strike_Target"],
-                category,
-              ]),
-              [">", ["get", "Strike_Victims"], 0],
-            ];
-
-            // Apply the category filter to the map's data source
-            filterByCategory(selectedCategories);
-          };
-
-          // Function to apply date filter
-          const applyDateFilter = (fromTimestamp, toTimestamp) => {
-            dateFilter = [
-              "all",
-              [">=", ["get", "Date"], fromTimestamp],
-              ["<=", ["get", "Date"], toTimestamp],
-            ];
-
-            // Apply the date filter to the map's data source
-            map.setFilter("poly", dateFilter);
-          };
-
-          // Call applyDateFilter initially or whenever the date range changes
-          applyDateFilter(fromTimestamp, toTimestamp);
-
-          // // Call applyCategoryFilter when a category is selected
-          applyCategoryFilter(selectedCategories);
-
-          // const filteredFeatures = map.queryRenderedFeatures({
-          //   layers: ["poly"],
+          //     // Set the map view to the selected city's coordinates
+          //     map.flyTo({
+          //       center: [lng, lat],
+          //       zoom: 12, // Adjust zoom level as needed
+          //     });
+          //   }
           // });
 
-          //           // Assuming "places" is the ID of your GeoJSON data source
-          // const geojsonData = map.getSource('poly')._data;
+          // Initialize button event listeners
+          document
+            .getElementById("prevButton1")
+            .addEventListener("click", function () {
+              // When 'Previous' is clicked on the first content
+              document.getElementById("contentBox1").style.display = "block";
+              document.getElementById("contentBox2").style.display = "none";
+              this.disabled = true; // Disable 'Previous' button in the first content
+              document.getElementById("nextButton1").disabled = false; // Enable 'Next' button in the first content
+            });
 
-          // // Now you have access to the features
-          // const features = geojsonData.features;
+          document
+            .getElementById("nextButton1")
+            .addEventListener("click", function () {
+              // When 'Next' is clicked on the first content
+              document.getElementById("contentBox1").style.display = "none";
+              document.getElementById("contentBox2").style.display = "block";
+              document.getElementById("prevButton2").disabled = false; // Enable 'Previous' button in the second content
+              this.disabled = true; // Disable 'Next' button in the first content
+            });
 
-          //           console.log(features);
+          document
+            .getElementById("prevButton2")
+            .addEventListener("click", function () {
+              // When 'Previous' is clicked on the second content
+              document.getElementById("contentBox2").style.display = "none";
+              document.getElementById("contentBox1").style.display = "block";
+              document.getElementById("nextButton1").disabled = false; // Enable 'Next' button in the first content
+              this.disabled = true; // Disable 'Previous' button in the second content
+            });
 
-          // calculateStrikeTypeCounts(features);
+          updateButtons();
         }
+
+        // // Function to handle "Previous" button click
+        // function showPreviousContent() {
+        //   // Show the first content box and hide the second one
+        //   document.getElementById("contentBox1").style.display = "block";
+        //   document.getElementById("contentBox2").style.display = "none";
+        //   updateButtons();
+        // }
+
+        // Function to update button states
+        function updateButtons() {
+          // Disables the previous button in the first box
+          document.getElementById("prevButton1").disabled = true;
+          // Disables the next button in the second box
+          document.getElementById("nextButton2").disabled = true;
+        }
+
+        // Function to update the map based on the selected city
+        function updateMapData() {
+          const selectedCity = document.getElementById("citySelect").value;
+          const cityCoordinates = {
+            بيروت: [35.4955, 33.8888],
+            طرابلس: [35.8456, 34.4367],
+            صيدا: [35.3692, 33.557],
+            صور: [35.1971, 33.2712],
+            زحلة: [35.9033, 33.8462],
+            جونية: [35.6435, 33.9808],
+            بعبدا: [35.5426, 33.8356],
+            جبيل: [35.6482, 34.1207],
+            بعلبك: [36.2045, 34.0059],
+            البترون: [35.6588, 34.2557],
+          };
+
+          if (cityCoordinates[selectedCity]) {
+            const [lng, lat] = cityCoordinates[selectedCity];
+            map.flyTo({ center: [lng, lat], zoom: 12 }); // Adjust zoom level as needed
+          }
+        }
+
+        // Initialize city selection on page load
+        initializeCitySelection();
+
+        // // Function to update button states
+        // function updateButtons() {
+        //   const prevButton = document.getElementById("prevButton");
+        //   const nextButton = document.getElementById("nextButton");
+
+        //   // Disable "Previous" button if at the first city
+        //   prevButton.disabled = currentCityIndex === 0;
+
+        //   // Disable "Next" button if at the last city
+        //   nextButton.disabled = currentCityIndex === cities.length - 1;
+        // }
+
+        // initializeCitySelection();
+
+        // document
+        //   .getElementById("prevButton")
+        //   .addEventListener("click", function () {
+        //     // Toggle visibility or replace content in the existing box
+        //     document.getElementById("contentBox").style.display = "block";
+        //     document.getElementById("otherContentBox").style.display = "none";
+        //     this.disabled = true; // Disable the 'Previous' button
+        //   });
+
+        // document
+        //   .getElementById("nextButton")
+        //   .addEventListener("click", function () {
+        //     // Toggle visibility or replace content in the existing box
+        //     document.getElementById("contentBox").style.display = "none";
+        //     document.getElementById("otherContentBox").style.display = "block";
+        //     document.getElementById("prevButton").disabled = false; // Enable the 'Previous' button
+        //   });
+
+        //     // Function to handle "Next" button click
+        //     function showNextContent() {
+        //       const contentBox = document.getElementById("contentBox");
+
+        //       // Overwrite the content of the box with new content
+        //       contentBox.innerHTML = `
+        //     <div class="new-content">
+        //         <p>هذه هي المحتويات الجديدة</p>
+        //         <!-- Add any other new content or elements here -->
+        //         <button id="backButton">عودة</button>
+        //     </div>
+        // `;
+
+        //       // Add event listener for "Back" button
+        //       document
+        //         .getElementById("backButton")
+        //         .addEventListener("click", () => {
+        //           // Call the initialize function to reset content to the original
+        //           contentBox.innerHTML = `
+        //                 <div class="box" id="contentBox">
+        //             <p class="note"><strong>إختر/ي المدينة</strong></p>
+        //             <div class="boxB">
+        //               <nav id="filter-group" class="filter-group"></nav>
+        //               <div id="menu-navigation">
+        //                 <button id="prevButton" disabled>السابق</button>
+        //                 <button id="nextButton">التالي</button>
+        //               </div>
+        //             </div>
+        //           </div>
+        //             `;
+        //           initializeCitySelection(); // Reinitialize the original content
+        //         });
+        //     }
+
+        // function updateMapData() {
+        //   this.map = map; // Assign map instance to this.map
+
+        //   const selectedCity = document.getElementById("citySelect").value;
+        //   if (cityCoordinates[selectedCity]) {
+        //     const [lng, lat] = cityCoordinates[selectedCity];
+        //     map.flyTo({ center: [lng, lat], zoom: 12 });
+        //   }
+
+        // // Function to apply category filter
+        // const applyCategoryFilter = (selectedCategories) => {
+        //   categoryFilter = [
+        //     "any",
+        //     selectedCategories.map((category) => [
+        //       "==",
+        //       ["get", "Strike_Type"],
+        //       category,
+        //     ]),
+        //     selectedCategories.map((category) => [
+        //       "==",
+        //       ["get", "Strike_Target"],
+        //       category,
+        //     ]),
+        //     [">", ["get", "Strike_Victims"], 0],
+        //   ];
+
+        //   // Apply the category filter to the map's data source
+        //   filterByCategory(selectedCategories);
+        // };
+
+        // // Function to apply date filter
+        // const applyDateFilter = (fromTimestamp, toTimestamp) => {
+        //   dateFilter = [
+        //     "all",
+        //     [">=", ["get", "Date"], fromTimestamp],
+        //     ["<=", ["get", "Date"], toTimestamp],
+        //   ];
+
+        //   // Apply the date filter to the map's data source
+        //   map.setFilter("poly", dateFilter);
+        // };
+
+        // // Call applyDateFilter initially or whenever the date range changes
+        // applyDateFilter(fromTimestamp, toTimestamp);
+
+        // // // Call applyCategoryFilter when a category is selected
+        // applyCategoryFilter(selectedCategories);
+
+        // const filteredFeatures = map.queryRenderedFeatures({
+        //   layers: ["poly"],
+        // });
+
+        //           // Assuming "places" is the ID of your GeoJSON data source
+        // const geojsonData = map.getSource('poly')._data;
+
+        // // Now you have access to the features
+        // const features = geojsonData.features;
+
+        //           console.log(features);
+
+        // calculateStrikeTypeCounts(features);
+        // }
 
         map.on("mousemove", "poly", function (e) {
           if (e.features[0]) {
@@ -516,7 +617,7 @@ export default {
                 // '<h3 style="direction:rtl;">' +
                 // strikeVictims(description.Strike_Victims) +
                 // '</p><p style="direction:rtl;"> ' +
-                strikeDetails(description) +
+                mapDetails(description) +
                 "</p>"
             )
             .addTo(map);
@@ -561,157 +662,174 @@ export default {
         // }
 
         //replaced strikeDetails function
-        function strikeDetails(info) {
-          // Convert fromDate and toDate to timestamps
-          const fromTimestamp = fromDateInput.value.valueOf();
-          const toTimestamp = toDateInput.value.valueOf();
+        function mapDetails(info) {
+          // // Convert fromDate and toDate to timestamps
+          // const fromTimestamp = fromDateInput.value.valueOf();
+          // const toTimestamp = toDateInput.value.valueOf();
 
-          const pickedVillage = info.objectid1;
-          var features = map.querySourceFeatures("places");
-          var totalCount = 0;
-          var datesCounted = []; // To track unique dates
-          var strikeTypeCounts = {}; // Object to store count of each strike type
-          var targetCounts = {}; // Object to store count of each target type
-          // var victimCounts = {}; // Object to store count of each target type
-          var totalVictimCount = 0; // Total count of victims
+          // const pickedVillage = info.objectid1;
+          // var features = map.querySourceFeatures("places");
+          // var totalCount = 0;
+          // var datesCounted = []; // To track unique dates
+          // var strikeTypeCounts = {}; // Object to store count of each strike type
+          // var targetCounts = {}; // Object to store count of each target type
+          // // var victimCounts = {}; // Object to store count of each target type
+          // var totalVictimCount = 0; // Total count of victims
 
-          // Object containing paths to strike type images
-          var strikeTypeImages = {
-            "طيران/ غارة جوية": "/images/AIRCRAFT.svg",
-            "قذائف مدفعية": "/images/ARTILARY SHELLS.svg",
-            "قنابل مضيئة": "/images/FLARE BOMB.svg",
-            فسفوري: "/images/PHOSPHORUS.svg",
-            "غير مؤكد": "/images/na-svgrepo-com.svg",
-          };
+          // // Object containing paths to strike type images
+          // var strikeTypeImages = {
+          //   "طيران/ غارة جوية": "/images/AIRCRAFT.svg",
+          //   "قذائف مدفعية": "/images/ARTILARY SHELLS.svg",
+          //   "قنابل مضيئة": "/images/FLARE BOMB.svg",
+          //   فسفوري: "/images/PHOSPHORUS.svg",
+          //   "غير مؤكد": "/images/na-svgrepo-com.svg",
+          // };
 
-          // Object containing paths to strike target images
-          var targetImages = {
-            "بيت/مبنى": "/images/house.svg",
-            "سيارة/دراجة": "/images/car-bicycle.svg",
-            "مدرسة/مستشفى/مسجد": "/images/school-mosque-hospital.svg",
-            صحافة: "/images/press.svg",
-            "جيش لبناني": "/images/lb army.svg",
-            "قوات حفظ السلام": "/images/peaceforces.svg",
-            "دواجن/زراعة/صيد": "/images/farm.svg",
-            "دفاع مدني/إسعاف": "/images/دفاع مدني - اسعاف.svg",
-            "غابات/ أحراج": "/images/forest.svg",
-            "مشاريع حيوية/ بنى تحتية": "/images/infrastructure.svg",
-            مقبرة: "/images/cemetery.svg",
-          };
+          // // Object containing paths to strike target images
+          // var targetImages = {
+          //   "بيت/مبنى": "/images/house.svg",
+          //   "سيارة/دراجة": "/images/car-bicycle.svg",
+          //   "مدرسة/مستشفى/مسجد": "/images/school-mosque-hospital.svg",
+          //   صحافة: "/images/press.svg",
+          //   "جيش لبناني": "/images/lb army.svg",
+          //   "قوات حفظ السلام": "/images/peaceforces.svg",
+          //   "دواجن/زراعة/صيد": "/images/farm.svg",
+          //   "دفاع مدني/إسعاف": "/images/دفاع مدني - اسعاف.svg",
+          //   "غابات/ أحراج": "/images/forest.svg",
+          //   "مشاريع حيوية/ بنى تحتية": "/images/infrastructure.svg",
+          //   مقبرة: "/images/cemetery.svg",
+          // };
 
-          var targetVictims = {
-            "ضحايا مدنيين": "/images/victim.svg",
-          };
+          // var targetVictims = {
+          //   "ضحايا مدنيين": "/images/victim.svg",
+          // };
 
-          const processedIDs = new Set(); // Set to store processed IDs
-          for (var i = 0; i < features.length; i++) {
-            var props = features[i].properties;
-            const featureID = props.ID; // Get the ID of the current feature
-            // Check if the feature ID has already been processed
-            if (processedIDs.has(featureID)) {
-              continue; // Skip processing if the ID has been processed before
-            }
+          // const processedIDs = new Set(); // Set to store processed IDs
+          // for (var i = 0; i < features.length; i++) {
+          //   var props = features[i].properties;
+          //   const featureID = props.ID; // Get the ID of the current feature
+          //   // Check if the feature ID has already been processed
+          //   if (processedIDs.has(featureID)) {
+          //     continue; // Skip processing if the ID has been processed before
+          //   }
 
-            processedIDs.add(featureID); // Add the ID to the set of processed IDs
+          //   processedIDs.add(featureID); // Add the ID to the set of processed IDs
 
-            if (props.objectid1 == pickedVillage) {
-              if (
-                fromTimestamp === "" ||
-                toTimestamp === "" || // No date range specified
-                (props.Date >= fromTimestamp && props.Date <= toTimestamp) // Date falls within the specified range
-              ) {
-                // Check if the date has not been counted before
-                if (!datesCounted.includes(props.Date)) {
-                  datesCounted.push(props.Date); // Add the date to the list of counted dates
-                  totalCount++; // Increment total count
-                }
+          //   if (props.objectid1 == pickedVillage) {
+          //     if (
+          //       fromTimestamp === "" ||
+          //       toTimestamp === "" || // No date range specified
+          //       (props.Date >= fromTimestamp && props.Date <= toTimestamp) // Date falls within the specified range
+          //     ) {
+          //       // Check if the date has not been counted before
+          //       if (!datesCounted.includes(props.Date)) {
+          //         datesCounted.push(props.Date); // Add the date to the list of counted dates
+          //         totalCount++; // Increment total count
+          //       }
 
-                const countedStrikeTypes = new Set(); // Set to store already counted strike types for the current date
-                const countedStrikeTargets = new Set(); // Set to store already counted strike targets for the current date
+          //       const countedStrikeTypes = new Set(); // Set to store already counted strike types for the current date
+          //       const countedStrikeTargets = new Set(); // Set to store already counted strike targets for the current date
 
-                // Increment strike type count for the current feature
-                const strikeTypes = props.Strike_Type.split(","); // Split into individual categories
-                // console.log(strikeTypes);
-                strikeTypes.forEach((type) => {
-                  const trimmedType = type.trim();
-                  if (Object.keys(strikeTypeImages).includes(trimmedType)) {
-                    countedStrikeTypes.add(trimmedType); // Add strike type to the set
-                  }
-                });
+          //       // Increment strike type count for the current feature
+          //       const strikeTypes = props.Strike_Type.split(","); // Split into individual categories
+          //       // console.log(strikeTypes);
+          //       strikeTypes.forEach((type) => {
+          //         const trimmedType = type.trim();
+          //         if (Object.keys(strikeTypeImages).includes(trimmedType)) {
+          //           countedStrikeTypes.add(trimmedType); // Add strike type to the set
+          //         }
+          //       });
 
-                // Increment target count for the current feature
-                if (props.Strike_Target) {
-                  const targetTypes = props.Strike_Target.split(","); // Split into individual categories
-                  targetTypes.forEach((target) => {
-                    const trimmedTarget = target.trim();
-                    if (Object.keys(targetImages).includes(trimmedTarget)) {
-                      countedStrikeTargets.add(trimmedTarget); // Add strike target to the set
-                    }
-                  });
-                }
+          //       // Increment target count for the current feature
+          //       if (props.Strike_Target) {
+          //         const targetTypes = props.Strike_Target.split(","); // Split into individual categories
+          //         targetTypes.forEach((target) => {
+          //           const trimmedTarget = target.trim();
+          //           if (Object.keys(targetImages).includes(trimmedTarget)) {
+          //             countedStrikeTargets.add(trimmedTarget); // Add strike target to the set
+          //           }
+          //         });
+          //       }
 
-                // Update strike type and strike target counts
-                countedStrikeTypes.forEach((type) => {
-                  // console.log(props.ID);
-                  // console.log("type:" + type);
-                  // console.log(strikeTypeCounts[type]);
-                  strikeTypeCounts[type] = (strikeTypeCounts[type] || 0) + 1;
-                });
-                countedStrikeTargets.forEach((target) => {
-                  targetCounts[target] = (targetCounts[target] || 0) + 1;
-                });
+          //       // Update strike type and strike target counts
+          //       countedStrikeTypes.forEach((type) => {
+          //         // console.log(props.ID);
+          //         // console.log("type:" + type);
+          //         // console.log(strikeTypeCounts[type]);
+          //         strikeTypeCounts[type] = (strikeTypeCounts[type] || 0) + 1;
+          //       });
+          //       countedStrikeTargets.forEach((target) => {
+          //         targetCounts[target] = (targetCounts[target] || 0) + 1;
+          //       });
 
-                // Increment total victim count for the current feature
-                if (
-                  props.Strike_Victims != "null" &&
-                  parseInt(props.Strike_Victims) > 0
-                ) {
-                  totalVictimCount += parseInt(props.Strike_Victims);
-                }
-              }
-            }
-          }
+          //       // Increment total victim count for the current feature
+          //       if (
+          //         props.Strike_Victims != "null" &&
+          //         parseInt(props.Strike_Victims) > 0
+          //       ) {
+          //         totalVictimCount += parseInt(props.Strike_Victims);
+          //       }
+          //     }
+          //   }
+          // }
 
-          if (pickedVillage == "" || info.objectid === null) {
-            return "";
-          }
+          // if (pickedVillage == "" || info.objectid === null) {
+          //   return "";
+          // }
 
           // Constructing the return string with counts of each strike type, target type, and total victim count
           var returnString =
             '<div dir="rtl">' +
-            info.Village +
+            "الاسم: " +
+            info["name"] + // 'name'
             "<p></p>" +
-            "أيام القصف: " +
-            totalCount +
-            "<p></p>";
-
-          // Append strike type counts to the return string
-          for (var strikeType in strikeTypeCounts) {
-            returnString +=
-              "<br> <img src='" +
-              strikeTypeImages[strikeType] +
-              "' alt='" +
-              strikeType +
-              "' style='width: 20px; height: 20px;'>" +
-              strikeTypeCounts[strikeType];
-          }
-
-          // Append target type counts to the return string
-          for (var targetType in targetCounts) {
-            returnString +=
-              "<br> <img src='" +
-              targetImages[targetType] +
-              "' alt='" +
-              targetType +
-              "' style='width: 20px; height: 20px;'>" +
-              targetCounts[targetType];
-          }
-
-          // Append total victim count to the return string
-          returnString +=
-            "<p></p><img src='/images/victims.svg' style='width: 20px; height: 20px;'>" +
-            totalVictimCount +
+            "سنة النشوء بعلاقتها مع النوع: " +
+            info["سنة النشوء بعلاقتها مع النوع"] + // 'yearOfEstablishmentTypeRelation'
+            "<p></p>" +
+            "الوصول إلى الأرض: " +
+            info["الوصول إلى الأرض"] + // 'landAccess'
+            "<p></p>" +
+            "ملكية الأرض: " +
+            info["ملكية الأرض"] + // 'landOwnership'
+            "<p></p>" +
+            "التصنيف الحالي للأرض: " +
+            info[" التصنيف الحالي للأرض في الأراضي الرسمية"] + // 'currentLandClassification'
+            "<p></p>" +
+            "وضع البناء: " +
+            info["وضع البناء"] + // 'buildingStatus'
+            "<p></p>" +
+            "المقاربة: " +
+            info["المقاربة"] + // 'approach'
+            "<p></p>" +
             "</div>";
+
+          // // Append strike type counts to the return string
+          // for (var strikeType in strikeTypeCounts) {
+          //   returnString +=
+          //     "<br> <img src='" +
+          //     strikeTypeImages[strikeType] +
+          //     "' alt='" +
+          //     strikeType +
+          //     "' style='width: 20px; height: 20px;'>" +
+          //     strikeTypeCounts[strikeType];
+          // }
+
+          // // Append target type counts to the return string
+          // for (var targetType in targetCounts) {
+          //   returnString +=
+          //     "<br> <img src='" +
+          //     targetImages[targetType] +
+          //     "' alt='" +
+          //     targetType +
+          //     "' style='width: 20px; height: 20px;'>" +
+          //     targetCounts[targetType];
+          // }
+
+          // // Append total victim count to the return string
+          // returnString +=
+          //   // "<p></p><img src='/images/victims.svg' style='width: 20px; height: 20px;'>" +
+          //   // totalVictimCount +
+          //   "</div>";
 
           return returnString;
         }
@@ -724,11 +842,11 @@ export default {
         //   });
         // }
 
-        // Now filterByCategory is accessible within this component
-        this.handleCategoryClick = (category) => {
-          // Call filterByCategory function passing the clicked category
-          filterByCategory(category);
-        };
+        // // Now filterByCategory is accessible within this component
+        // this.handleCategoryClick = (category) => {
+        //   // Call filterByCategory function passing the clicked category
+        //   filterByCategory(category);
+        // };
         //     handleCategoryClick(category) {
         //   this.filterByCategory(category);
         // };
@@ -803,85 +921,59 @@ body {
   position: absolute;
   left: 40px;
   display: flex;
+  flex-direction: column; /* Align items vertically */
   width: 174px;
-  /* height: 209px; */
   height: 30vh;
   padding: 20px;
   z-index: 100000;
-  /* display: flex; */
-  /* align-content: flex-start !important; */
-  justify-content: space-between;
+  justify-content: flex-start; /* Align items to the top */
   top: 0px;
   margin: 0.5rem;
   background-color: rgb(255, 255, 255);
   outline: 2px solid black;
   box-sizing: border-box;
 }
-/* .box {
+
+/* Styles for .boxC */
+/* .boxB {
+  position: absolute;
+  left: 50%; 
+  top: 30%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  background-color: rgb(255, 255, 255);
-  height: 100vh;
-  padding: 20px;
-  box-sizing: border-box;
+  align-items: center; 
+  width: auto;
+  height: auto;
+  z-index: 100000;
+  color: #ffffff;
+  transition: height 0.5s ease; 
+  direction: rtl !important;
+  transform: translateX(-50%); 
 } */
 
-/* Style for the content section */
-.content {
-  flex: 1; /* Take up remaining space */
+/* Styles for .boxB */
+.boxB {
+  position: relative; /* Ensure children are positioned relative to this */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center children horizontally */
+  width: 100%; /* Ensure it takes full width */
+  height: auto;
 }
 
+/* Media Query for smaller screens */
 @media screen and (max-width: 767px) {
   .box {
-    position: absolute;
-    left: 40px;
-    display: flex;
     width: 154px;
     height: 209px;
-    z-index: 100000;
-    display: flex;
     align-content: flex-start !important;
     justify-content: space-around;
-
-    top: 0px;
-    margin: 0.5rem;
-    /* background-color: rgba(255, 255, 255, 0.288); */
-    background-color: rgb(255, 255, 255);
-    outline: 2px solid black;
-    /* outline-width: 1px; */
-    /* box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-      0 10px 10px -5px rgba(0, 0, 0, 0.04); */
-    /* Outline for the legend */
   }
-}
-.boxB {
-  position: absolute;
-  /* left: 85%; */
-  /* left: 40px; */
-  bottom: 15%;
 
-  display: flex;
-  /* width: 146px; */
-  height: 450px;
-  z-index: 100000;
-  flex-flow: column;
-  align-content: flex-start !important;
-  /* top: 37%; */
-  /* margin: 0.5rem; */
-  /* background-color: rgba(255, 255, 255, 0.188); */
-  /* box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04); */
-  transition: height 0.5s ease; /* Add smooth transition for height change */
-  direction: rtl !important;
-}
-@media screen and (max-width: 767px) {
   .boxB {
-    height: 360px;
-    /* width: 165px; */
-    /* bottom: 18%; */
-    /* left: 40px; */
-    top: 30%;
+    bottom: 7%;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
   }
 }
 
@@ -972,51 +1064,80 @@ body {
   }
 }
 
-/* General button styles */
-button {
-  font-family: "Arial", sans-serif;
-  font-size: 16px;
-  padding: 10px 20px;
-  margin: 5px;
+/* Common styles for all navigation buttons */
+.navButton {
+  background-color: #3498db; /* Blue color */
+  color: white;
   border: none;
-  border-radius: 5px;
+  padding: 10px 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s, transform 0.2s;
+  flex: 1; /* Make buttons take equal width */
 }
 
-/* Specific styles for enabled buttons */
-#prevButton:not(:disabled),
-#nextButton {
+/* Styles for enabled buttons (default) */
+.navButton:not(:disabled) {
   background-color: #3498db; /* Blue color */
   color: white;
 }
 
-/* Hover effect for buttons */
-#prevButton:not(:disabled):hover,
-#nextButton:hover {
+/* Hover effect for enabled buttons */
+.navButton:not(:disabled):hover {
   background-color: #2980b9; /* Darker blue */
   transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
-/* Disabled button styles */
-#prevButton:disabled {
-  background-color: #bdc3c7; /* Grey color */
-  color: #7f8c8d; /* Darker grey text */
-  cursor: not-allowed;
+/* Styles for disabled buttons */
+.navButton:disabled {
+  background-color: #ccc; /* Grey color for disabled state */
+  color: #666; /* Grey text color */
+  cursor: not-allowed; /* Cursor for disabled button */
+  transform: none; /* Remove any transformations */
+}
+/* Hover effect for navigation buttons */
+.navButton:hover {
+  background-color: #2980b9; /* Darker blue */
+  transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
-/* Active button styles (on click) */
-button:active {
-  transform: scale(0.98); /* Slightly shrink on click */
+/* Specific styles for 'Previous' buttons */
+.prevButton {
+  /* Add any specific styles for 'Previous' buttons here if needed */
 }
 
-/* Style for the navigation buttons container */
+/* Specific styles for 'Next' buttons */
+.nextButton {
+  /* Add any specific styles for 'Next' buttons here if needed */
+}
+
+/* Styles for .content */
+.content {
+  flex: 1; /* Take up remaining space */
+}
+/* Styles for #filter-group */
+#filter-group {
+  margin-bottom: 30px; /* Add some spacing below */
+}
+.menu-navigation-class {
+  top: 30%;
+}
+/* Styles for #menu-navigation */
 #menu-navigation {
   display: flex;
-  justify-content: center; /* Center buttons horizontally */
-  margin-top: 20px;
+  justify-content: space-between; /* Evenly distribute buttons */
+  gap: 10px; /* Space between buttons */
+  width: 100%; /* Full width of the parent */
+  padding: 10px; /* Optional: add padding for better appearance */
 }
 
+/* Style for the city dropdown */
+.city-dropdown {
+  font-size: 1.6em; /* Increase font size */
+  padding: 8px; /* Padding for better appearance */
+  border: 1px solid #ccc; /* Border styling */
+  border-radius: 4px; /* Rounded corners */
+  width: 100%; /* Full width */
+}
 /* .button {
   font-size: 5px;
   width: 120px;
@@ -1104,9 +1225,9 @@ button:active {
   justify-content: center;
   align-items: flex-start;
   text-align: center !important;
-  font-size: 1.3em;
+  font-size: 1.6em;
   font-family: "Tajawal";
-  margin-bottom: -0.5rem;
+  margin-bottom: 0.5rem;
   color: rgb(0, 0, 0);
   direction: rtl !important;
 }
@@ -1168,103 +1289,6 @@ button:active {
     url("/fonts/Tajawal-Regular.otf") format("opentype"), */ url("/fonts/Tajawal-Regular.ttf")
     format("truetype");
   /* url("/fonts/Tajawal-Regular.svg#Tajawal-Regular") format("svg"); */
-}
-
-/* #menu {
-  background: #fff;
-  position: absolute;
-  z-index: 1;
-  top: 10px;
-  right: 10px;
-  border-radius: 3px;
-  width: 120px;
-  font-family: "Open Sans", sans-serif;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-} */
-
-/* #menu a {
-  font-size: 13px;
-  color: #404040;
-  display: block;
-  margin: 0;
-  padding: 0;
-  padding: 10px;
-  text-decoration: none;
-  text-align: center;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-#menu a:last-child {
-  border: none;
-}
-
-#menu a:hover {
-  background-color: #f8f8f8;
-  color: #404040;
-}
-
-#menu a.active {
-  background-color: #ffa12c;
-  color: #ffffff;
-} */
-
-.filter-group {
-  /* font: 0.8em/1.4em "Helvetica Neue", Arial, Helvetica, sans-serif;
-  font-weight: 600;
-  position: absolute;
-  top: 30px;
-  right: 20px;
-  z-index: 1;
-  border-radius: 3px;
-  width: 120px;
-  color: #fff;
-  text-align: center !important; */
-  flex: 1; /* Take up remaining space */
-  margin-bottom: 20px; /* Add space below to prevent overlap with buttons */
-}
-
-@media screen and (max-width: 767px) {
-  .filter-group {
-    right: 17px;
-  }
-}
-
-.filter-group input[type="checkbox"]:first-child + label {
-  border-radius: 3px 3px 0 0;
-}
-
-.filter-group label:last-child {
-  border-radius: 0 0 3px 3px;
-  border: none;
-}
-
-.filter-group input[type="checkbox"] {
-  display: none;
-}
-
-.filter-group input[type="checkbox"] + label {
-  background-color: #3386c0;
-  display: block;
-  cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
-}
-
-.filter-group input[type="checkbox"] + label {
-  background-color: #3386c0;
-  text-transform: capitalize;
-}
-
-.filter-group input[type="checkbox"] + label:hover,
-.filter-group input[type="checkbox"]:checked + label {
-  background-color: #4ea0da;
-}
-
-.filter-group input[type="checkbox"]:checked + label:before {
-  content: "✔";
-  margin-right: 5px;
 }
 
 /* legend styling */
