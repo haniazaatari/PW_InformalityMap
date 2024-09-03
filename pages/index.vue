@@ -14,10 +14,21 @@
             </button>
           </div>
         </div>
+        <!-- <div>
+          <button
+            class="menu-filter"
+            id="menu-filter"
+            onclick="handleResetButtonClick()"
+          >
+            Reset Filters
+          </button>
+        </div> -->
+        <div id="menu-filter" class="menu-filter"></div>
       </div>
       <div class="box" id="contentBox2" style="display: none">
-        HEllooooo
+        <p class="note"><strong>بحسب سنة النشوء بعلاقتها مع النوع</strong></p>
         <div class="boxB">
+          <nav id="filter-group2" class="filter-group"></nav>
           <div id="menu-navigation" class="menu-navigation-class">
             <button id="prevButton2" class="navButton prevButton2">
               السابق
@@ -29,6 +40,7 @@
         </div>
 
         <!-- Other content goes here, initially hidden -->
+        <div id="menu-filter2" class="menu-filter"></div>
       </div>
 
       <div class="box-row">
@@ -140,28 +152,25 @@ export default {
           },
           firstSymbolId
         );
-        // map.addLayer(
-        //   {
-        //     id: "poly",
-        //     type: "fill",
-        //     source: "places", // reference the data source
-        //     layout: {},
-        //     // paint: {
-        //     //   "fill-color": "#f48282", // blue color fill
-        //     //   "fill-opacity": 0.4,
-        //     // },
-        //     paint: {
-        //       "fill-color": [
-        //         "match",
-        //         ["get", "fid"], // Get the 'fid' property of the feature
-        //         ...Object.entries(colors).flat(), // Spread the color array
-        //         "#cccccc", // Default color if 'fid' doesn't match any case
-        //       ],
-        //       "fill-opacity": 0.4,
-        //     },
-        //   },
-        //   firstSymbolId
-        // );
+
+        // Create the reset button
+        const menuFilter = document.getElementById("menu-filter");
+        const resetButton = document.createElement("button");
+        resetButton.textContent = "Reset Filters";
+        resetButton.style.marginBottom = "10%";
+        // resetButton.style.marginLeft = "-25px";
+        resetButton.style.width = "160px";
+        resetButton.style.height = "40px";
+        resetButton.style.cursor = "pointer";
+        resetButton.style.fontSize = "16px";
+        resetButton.style.marginTop = "10px"; // Adjust spacing as needed
+        resetButton.style.backgroundColor = "Yellow";
+        resetButton.addEventListener(
+          "click",
+          handleResetButtonClick.bind(this)
+        );
+        resetButton.classList.add("legend-button");
+        menuFilter.appendChild(resetButton);
 
         // // Add a grey outline around the polygon.
         // map.addLayer({
@@ -246,7 +255,8 @@ export default {
         // });
 
         function initializeCitySelection() {
-          const filterGroup = document.getElementById("filter-group");
+          const filterGroup1 = document.getElementById("filter-group");
+
           // Create and configure the city dropdown
           const citySelect = document.createElement("select");
           citySelect.id = "citySelect";
@@ -289,7 +299,32 @@ export default {
           });
 
           // Append the city dropdown to the filter group
-          filterGroup.appendChild(citySelect);
+          filterGroup1.appendChild(citySelect);
+
+          const filterGroup2 = document.getElementById("filter-group2");
+          // Create and configure the city dropdown
+          const rangeFilter = document.createElement("select");
+          rangeFilter.id = "rangeFilter";
+          rangeFilter.classList.add("city-dropdown"); // Correct way to add a class
+          rangeFilter.style.marginTop = "20px";
+          rangeFilter.addEventListener("change", updateMapData);
+
+          const dateRanges = [
+            "1930s - 1950s بدأت كمخيمات للاجئين / مناطق لإسكان اللاجئين ذوي الدخل المنخفض",
+            "1950s - 1970s بدأت كمناطق سكنية للمهاجرين من الريف إلى المدينة",
+            "1975 - 1990 بدأت جراء الحرب اللبنانية",
+            "1990 - اليوم بدأت جراء المعارك المتتالية والهجرات الناتجة عنها",
+          ];
+
+          // Create an option for each city and append to the dropdown
+          dateRanges.forEach((dateRange) => {
+            const option = document.createElement("option");
+            option.value = dateRange;
+            option.textContent = dateRange;
+            rangeFilter.appendChild(option);
+          });
+
+          filterGroup2.appendChild(rangeFilter);
 
           // // Coordinates for each city in Lebanon
           // const cityCoordinates = {
@@ -350,6 +385,7 @@ export default {
               // When 'Next' is clicked on the first content
               document.getElementById("contentBox1").style.display = "none";
               document.getElementById("contentBox2").style.display = "block";
+              document.getElementById("menu-filter2").style.display = "block";
               document.getElementById("prevButton2").disabled = false; // Enable 'Previous' button in the second content
               this.disabled = true; // Disable 'Next' button in the first content
             });
@@ -386,6 +422,34 @@ export default {
         // Function to update the map based on the selected city
         function updateMapData() {
           const selectedCity = document.getElementById("citySelect").value;
+          const selectedDateRange =
+            document.getElementById("rangeFilter").value;
+
+          map.setFilter("poly", [
+            "==",
+            ["get", "سنة النشوء بعلاقتها مع النوع"],
+            selectedDateRange,
+          ]);
+
+          // // Fetch and filter your GeoJSON data based on the selected date range
+          // fetch("./informalitymap.geojson")
+          //   .then((response) => response.json())
+          //   .then((data) => {
+          //     // Filter features based on the selected date range
+          //     const filteredFeatures = data.features.filter((feature) => {
+          //       return (
+          //         feature.properties["سنة النشوء بعلاقتها مع النوع"] ===
+          //         selectedDateRange
+          //       );
+          //     });
+
+          //     // Update the source data
+          //     map.getSource("places").setData({
+          //       type: "FeatureCollection",
+          //       features: filteredFeatures,
+          //     });
+          //   });
+
           const cityCoordinates = {
             بيروت: [35.4955, 33.8888],
             طرابلس: [35.8456, 34.4367],
@@ -407,6 +471,17 @@ export default {
 
         // Initialize city selection on page load
         initializeCitySelection();
+
+        // Function to handle reset button click
+        function handleResetButtonClick() {
+          // Clear the filter on the 'poly' layer to show all features
+          if (map.getLayer("poly")) {
+            map.setFilter("poly", null); // This will remove any filters applied and show all features
+          }
+
+          // If you need to reapply a specific filter or refresh data, call updateMapData
+          // updateMapData(); // Uncomment if you need to call this to reset or refresh other parts
+        }
 
         // // Function to update button states
         // function updateButtons() {
@@ -622,39 +697,6 @@ export default {
             )
             .addTo(map);
         });
-
-        // Function to handle reset button click
-
-        // Function to handle reset button click
-        function handleResetButtonClick() {
-          // Clear the value of fromDateInput and toDateInput
-          fromDateInput.value = "";
-          toDateInput.value = "";
-
-          // Remove the filter from the map
-          map.setFilter("poly", null);
-
-          // Reset all clicked states
-          if (this.legendItems) {
-            this.legendItems.forEach((item) => {
-              item.clicked = false;
-              const legendItemElement = document.querySelector(
-                `.legend-item[data-label="${item.label}"]`
-              );
-              if (legendItemElement) {
-                legendItemElement.classList.remove("clicked");
-              }
-            });
-          }
-
-          //add markers reset here
-          // Set all markers to opacity 0 initially
-          map.markers.forEach((marker) => {
-            marker.getElement().style.opacity = 1;
-          });
-
-          updateMapData();
-        }
 
         // function calculateTotalStrikeCount(feature) {
         //   const uniqueDates = new Set(feature.properties.dates);
@@ -922,7 +964,7 @@ body {
   left: 40px;
   display: flex;
   flex-direction: column; /* Align items vertically */
-  width: 174px;
+  width: 200px;
   height: 30vh;
   padding: 20px;
   z-index: 100000;
@@ -1121,6 +1163,16 @@ body {
 .menu-navigation-class {
   top: 30%;
 }
+
+/* CSS for menu-navigation */
+.menu-filter {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center; /* Center buttons horizontally */
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 20px; /* Space below the menu */
+}
+
 /* Styles for #menu-navigation */
 #menu-navigation {
   display: flex;
