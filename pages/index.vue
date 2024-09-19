@@ -131,7 +131,7 @@ export default {
         map.addSource("places", {
           type: "geojson",
           generateId: true,
-          data: "./informalitymap.geojson",
+          data: "./beirut-informalitymap.geojson",
         });
 
         map.addLayer(
@@ -148,6 +148,21 @@ export default {
                 ["%", ["*", ["get", "fid"], 550], 255], // Blue channel based on fid
               ],
               "fill-opacity": 0.7,
+            },
+          },
+          firstSymbolId
+        );
+
+        // Outline layer
+        map.addLayer(
+          {
+            id: "poly-outline",
+            type: "line",
+            source: "places", // reference the data source
+            layout: {},
+            paint: {
+              "line-color": "#000", // outline color
+              "line-width": 2, // outline width
             },
           },
           firstSymbolId
@@ -172,15 +187,22 @@ export default {
         resetButton.classList.add("legend-button");
         menuFilter.appendChild(resetButton);
 
-        // // Add a grey outline around the polygon.
+        // //added informality map
+        // map.addSource("greaterBeirut", {
+        //   type: "geojson",
+        //   generateId: true,
+        //   data: "./Greaterbeirut.geojson",
+        // });
+
+        // // // Add a grey outline around the polygon.
         // map.addLayer({
         //   id: "outline",
         //   type: "line",
-        //   source: "places",
+        //   source: "greaterBeirut",
         //   layout: {},
         //   paint: {
-        //     "line-color": "black",
-        //     "line-width": 0.05,
+        //     "line-color": "white",
+        //     "line-width": 0.6,
         //   },
         // });
 
@@ -310,9 +332,10 @@ export default {
           rangeFilter.addEventListener("change", updateMapData);
 
           const dateRanges = [
+            "",
             "1930s - 1950s بدأت كمخيمات للاجئين / مناطق لإسكان اللاجئين ذوي الدخل المنخفض",
             "1950s - 1970s بدأت كمناطق سكنية للمهاجرين من الريف إلى المدينة",
-            "1975 - 1990 بدأت جراء الحرب اللبنانية",
+            "1975 - 1990 بدأت خلال الحرب اللبنانية",
             "1990 - اليوم بدأت جراء المعارك المتتالية والهجرات الناتجة عنها",
           ];
 
@@ -425,14 +448,25 @@ export default {
           const selectedDateRange =
             document.getElementById("rangeFilter").value;
 
-          map.setFilter("poly", [
-            "==",
-            ["get", "سنة النشوء بعلاقتها مع النوع"],
-            selectedDateRange,
-          ]);
+          // Check if the content2 menu is active
+          const content2Menu = document.getElementById("contentBox2");
 
+          if (content2Menu && content2Menu.style.display === "block") {
+            // Only apply the filter if we are in the content2 menu
+            if (selectedDateRange === "") {
+              // If the first option (empty string) is selected, show all data
+              map.setFilter("poly", null);
+            } else {
+              // Apply the filter for the selected date range
+              map.setFilter("poly", [
+                "==",
+                ["get", "سنة النشوء بعلاقتها مع النوع"],
+                selectedDateRange,
+              ]);
+            }
+          }
           // // Fetch and filter your GeoJSON data based on the selected date range
-          // fetch("./informalitymap.geojson")
+          // fetch("./beirut-informalitymap.geojson")
           //   .then((response) => response.json())
           //   .then((data) => {
           //     // Filter features based on the selected date range
@@ -835,7 +869,7 @@ export default {
             info["ملكية الأرض"] + // 'landOwnership'
             "<p></p>" +
             "التصنيف الحالي للأرض: " +
-            info[" التصنيف الحالي للأرض في الأراضي الرسمية"] + // 'currentLandClassification'
+            info["التصنيف الحالي للأرض في الخرائط الرسمية"] + // 'currentLandClassification'
             "<p></p>" +
             "وضع البناء: " +
             info["وضع البناء"] + // 'buildingStatus'
