@@ -3,12 +3,14 @@
     "name": "index-en",
     "path": "/index-en",
     "component": "C:\\\\Users\\\\hania\\\\Documents\\\\PW_InformalityMap\\\\pages\\\\index-en.vue",
-    "chunkName": "pages/index-en"
+    "chunkName": "pages/index-en",
+    "_name": "_8935e528"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\hania\\\\Documents\\\\PW_InformalityMap\\\\pages\\\\index.vue",
-    "chunkName": "pages/index"
+    "chunkName": "pages/index",
+    "_name": "_0c2f29cc"
   }
 ]

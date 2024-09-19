@@ -1,0 +1,8 @@
+<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="x-pattern" patternUnits="userSpaceOnUse" width="25" height="25">
+      <path d="M0 0L10 10M10 0L0 10" stroke="#FFF" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="40" height="40" fill="url(#x-pattern)"/>
+</svg>

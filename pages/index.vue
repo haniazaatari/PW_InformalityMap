@@ -127,6 +127,66 @@ export default {
           }
         }
 
+        // Function to load SVG patterns
+        function loadSvgPattern(map, patternName, svgPath) {
+          // Check if the image already exists
+          if (map.hasImage(patternName)) {
+            console.log(`Image "${patternName}" already exists.`);
+            return;
+          }
+
+          var img = new Image();
+          img.crossOrigin = "Anonymous"; // Prevent CORS issues
+
+          img.onload = function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            var pngUrl = canvas.toDataURL("image/png");
+
+            map.loadImage(pngUrl, function (error, image) {
+              if (error) {
+                console.error("Error loading image into Mapbox:", error);
+                return;
+              }
+              map.addImage(patternName, image);
+            });
+          };
+
+          img.onerror = function () {
+            console.error(`Failed to load image from path: ${svgPath}`);
+          };
+
+          img.src = svgPath; // Set the source to the SVG path
+        }
+
+        // Listen for missing image event and dynamically add the image
+        map.on("styleimagemissing", function (e) {
+          var id = e.id;
+          if (patterns[id]) {
+            loadSvgPattern(map, id, patterns[id]);
+          }
+        });
+
+        // Patterns
+        var patterns = {
+          "pattern-palcamp": "/images/pattern-palcamp.svg",
+          hideout: "/images/hideout.svg",
+          "polka-dots": "/images/polka-dots.svg",
+          chevron: "/images/chevron.svg",
+          diagonalcross: "/images/diagonalcross.svg",
+          grid: "/images/grid.svg",
+          cross: "/images/cross.svg",
+        };
+
+        // Load patterns dynamically
+        for (const [patternName, svgPath] of Object.entries(patterns)) {
+          loadSvgPattern(map, patternName, svgPath);
+        }
+        // map.addImage("pattern-palcamp", "./images/pattern-palcamp.svg");
+
         //added informality map
         map.addSource("places", {
           type: "geojson",
@@ -142,15 +202,64 @@ export default {
             layout: {},
             paint: {
               "fill-color": [
-                "rgb",
-                ["%", ["*", ["get", "fid"], 110], 255], // Red channel based on fid
-                ["%", ["*", ["get", "fid"], 330], 255], // Green channel based on fid
-                ["%", ["*", ["get", "fid"], 550], 255], // Blue channel based on fid
+                "match",
+                ["get", "سنة النشوء بعلاقتها مع النوع"],
+                "1930s - 1950s بدأت كمخيمات للاجئين / مناطق لإسكان اللاجئين ذوي الدخل المنخفض",
+                "#FF6347", // tomato color
+                "1950s - 1970s بدأت كمناطق سكنية للمهاجرين من الريف إلى المدينة",
+                "#4682B4", // steelblue color
+                "1975 - 1990 بدأت خلال الحرب اللبنانية",
+                "#32CD32", // limegreen color
+                "1990 - اليوم بدأت جراء المعارك المتتالية والهجرات الناتجة عنها",
+                "#FFD700", // gold color
+                /* default */ "#808080", // gray for other/unmatched
               ],
+
+              // random colors :)
+              // "fill-color": [
+              //   "rgb",
+              //   ["%", ["*", ["get", "fid"], 110], 255], // Red channel based on fid
+              //   ["%", ["*", ["get", "fid"], 330], 255], // Green channel based on fid
+              //   ["%", ["*", ["get", "fid"], 550], 255], // Blue channel based on fid
+              // ],
               "fill-opacity": 0.7,
             },
           },
           firstSymbolId
+        );
+
+        map.addLayer(
+          {
+            id: "poly-pattern",
+            type: "fill",
+            source: "places", // reference the data source
+            layout: {},
+            paint: {
+              "fill-pattern": [
+                "match",
+                ["get", "الوصول إلى الأرض"],
+                "مخيم فلسطيني",
+                "pattern-palcamp", // Tomato color pattern
+                "مخيم أرمني",
+                "hideout", // Steelblue color pattern
+                "تجمع فلسطيني",
+                "polka-dots", // Limegreen color pattern
+                "مشروع للأرمن",
+                "chevron", // Gold color pattern
+                "إفراز غير رسمي للأراضي في ضواحي المدن",
+                "diagonalcross", // Blueviolet color pattern
+                "وضع اليد في أراضي متنازع على ملكيّتها",
+                "grid", // Orangered color pattern
+                "وضع اليد في مشاريع الإسكان العام",
+                "cross", // Seagreen color pattern
+                /* default */ "polka-dots", // Gray pattern for unmatched cases
+              ],
+
+              "fill-opacity": 1,
+              "fill-pattern-transform": ["scale", 0.8, 0.8],
+            },
+          },
+          "poly"
         );
 
         // Outline layer
@@ -999,7 +1108,7 @@ body {
   display: flex;
   flex-direction: column; /* Align items vertically */
   width: 200px;
-  height: 30vh;
+  height: 32vh;
   padding: 20px;
   z-index: 100000;
   justify-content: flex-start; /* Align items to the top */
