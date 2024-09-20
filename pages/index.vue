@@ -1597,7 +1597,7 @@ body {
   text-align: right;
   vertical-align: text-middle;
   /* font-size: 20px; */
-  font-size: 1em;
+  font-size: 1.6em;
 
   line-height: 27px;
   font-family: "Raleway";
@@ -1658,7 +1658,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   text-align: center !important;
-  font-size: 1.3em;
+  font-size: 1.5em;
   font-family: "Tajawal";
   margin-bottom: 0.5rem;
   color: rgb(0, 0, 0);
