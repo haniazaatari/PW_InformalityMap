@@ -271,11 +271,29 @@ export default {
             layout: {},
             paint: {
               "line-color": "#000", // outline color
-              "line-width": 2, // outline width
+              "line-width": 0.5, // outline width
             },
           },
           firstSymbolId
         );
+
+        // Add a symbol layer to display the name in the center of each zone
+        map.addLayer({
+          id: "zone-label",
+          type: "symbol",
+          source: "places",
+          layout: {
+            "text-field": ["get", "name"], // Assuming your GeoJSON has a 'name' property
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"], // Adjust as needed
+            "text-size": 14,
+            "text-anchor": "center", // Center the text
+          },
+          paint: {
+            "text-color": "#000", // Text color
+            "text-halo-color": "#fff", // Halo (outline) for better visibility
+            "text-halo-width": 1,
+          },
+        });
 
         // Create the reset button
         const menuFilter = document.getElementById("menu-filter");
