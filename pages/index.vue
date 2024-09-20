@@ -558,6 +558,7 @@ export default {
             const option = document.createElement("option");
             option.value = dateRange;
             option.textContent = dateRange;
+            option.title = dateRange;
             rangeFilter.appendChild(option);
           });
 
@@ -581,6 +582,7 @@ export default {
             const option = document.createElement("option");
             option.value = landOwnershipRange;
             option.textContent = landOwnershipRange;
+            option.title = landOwnershipRange;
             landOwnership.appendChild(option);
           });
 
@@ -613,6 +615,7 @@ export default {
             const option = document.createElement("option");
             option.value = accessTypeRange;
             option.textContent = accessTypeRange;
+            option.title = accessTypeRange;
             accessType.appendChild(option);
           });
 
@@ -1361,7 +1364,7 @@ body {
   left: 40px;
   display: flex;
   flex-direction: column; /* Align items vertically */
-  width: 250px;
+  width: 300px;
   height: 80vh;
   padding: 20px;
   z-index: 100000;
@@ -1562,7 +1565,7 @@ body {
 
 /* Style for the city dropdown */
 .city-dropdown {
-  font-size: 1.3em; /* Increase font size */
+  font-size: 1.5em; /* Increase font size */
   padding: 8px; /* Padding for better appearance */
   border: 1px solid #ccc; /* Border styling */
   border-radius: 4px; /* Rounded corners */
