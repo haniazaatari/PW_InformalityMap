@@ -146,7 +146,7 @@ export default {
 
     setTimeout(() => {
       map.flyTo({
-        center: [35.4955, 33.8888],
+        center: [35.52907144495116, 33.86973923491871],
         zoom: 12,
       });
     }, 2000);
@@ -666,7 +666,8 @@ export default {
           //update city selection
           const selectedCity = document.getElementById("citySelect").value;
           const cityCoordinates = {
-            بيروت: [35.4955, 33.8888],
+            // بيروت: [35.4955, 33.8888],
+            بيروت: [35.52907144495116, 33.86973923491871],
             طرابلس: [35.8456, 34.4367],
             صيدا: [35.3692, 33.557],
             صور: [35.1971, 33.2712],
@@ -1558,7 +1559,7 @@ body {
 
 /* Style for the city dropdown */
 .city-dropdown {
-  font-size: 1.6em; /* Increase font size */
+  font-size: 1.3em; /* Increase font size */
   padding: 8px; /* Padding for better appearance */
   border: 1px solid #ccc; /* Border styling */
   border-radius: 4px; /* Rounded corners */
@@ -1651,7 +1652,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   text-align: center !important;
-  font-size: 1.6em;
+  font-size: 1.3em;
   font-family: "Tajawal";
   margin-bottom: 0.5rem;
   color: rgb(0, 0, 0);
