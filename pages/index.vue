@@ -869,7 +869,10 @@ export default {
             });
 
           // Optionally, fly back to the default center or zoom level after reset
-          map.flyTo({ center: [35.4955, 33.8888], zoom: 12 }); // Default to Beirut or desired center/zoom
+          map.flyTo({
+            center: [35.52907144495116, 33.86973923491871],
+            zoom: 12,
+          }); // Default to Beirut or desired center/zoom
         }
 
         // // Function to handle reset button click
@@ -1358,7 +1361,7 @@ body {
   left: 40px;
   display: flex;
   flex-direction: column; /* Align items vertically */
-  width: 200px;
+  width: 250px;
   height: 80vh;
   padding: 20px;
   z-index: 100000;
