@@ -1,46 +1,88 @@
 <template>
   <main>
     <div id="map" ref="map">
-      <div class="box" id="contentBox1">
+      <div class="box" id="contentBox">
         <p class="note"><strong>إختر/ي المدينة</strong></p>
-        <div class="boxB">
-          <nav id="filter-group" class="filter-group"></nav>
-          <div id="menu-navigation" class="menu-navigation-class">
-            <button id="prevButton1" class="navButton prevButton" disabled>
-              السابق
-            </button>
-            <button id="nextButton1" class="navButton nextButton">
-              التالي
-            </button>
-          </div>
-        </div>
-        <!-- <div>
-          <button
-            class="menu-filter"
-            id="menu-filter"
-            onclick="handleResetButtonClick()"
-          >
-            Reset Filters
-          </button>
-        </div> -->
-        <div id="menu-filter" class="menu-filter"></div>
-      </div>
-      <div class="box" id="contentBox2" style="display: none">
-        <p class="note"><strong>بحسب سنة النشوء بعلاقتها مع النوع</strong></p>
-        <div class="boxB">
-          <nav id="filter-group2" class="filter-group"></nav>
-          <div id="menu-navigation" class="menu-navigation-class">
-            <button id="prevButton2" class="navButton prevButton2">
-              السابق
-            </button>
-            <button id="nextButton2" class="navButton nextButton2" disabled>
-              التالي
-            </button>
-          </div>
-        </div>
 
-        <!-- Other content goes here, initially hidden -->
-        <div id="menu-filter2" class="menu-filter"></div>
+        <nav id="filter-group" class="filter-group"></nav>
+        <p class="note"><strong>إختر/ي سنة النشوء بعلاقتها مع النوع</strong></p>
+
+        <nav id="filter-group2" class="filter-group"></nav>
+        <p class="note"><strong>إختر/ي ملكية الأرض</strong></p>
+        <nav id="filter-group3" class="filter-group"></nav>
+        <p class="note"><strong>إختر/ي نوع الوصول الى الأرض</strong></p>
+        <nav id="filter-group4" class="filter-group"></nav>
+
+        <div id="reset-filter" class="reset-filter"></div>
+      </div>
+      <div class="boxB">
+        <div id="legend">
+          <h3>Legend</h3>
+
+          <!-- Fill Color for "ملكية الأرض" -->
+          <h4>Land Ownership ("ملكية الأرض")</h4>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #ffd700"></span>
+            Public ("عام")
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #ff6347"></span>
+            Private ("خاص")
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #32cd32"></span>
+            Waqf ("وقف")
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #4682b4"></span>
+            Public-Private ("عام - خاص")
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #808080"></span>
+            Other
+          </div>
+
+          <!-- Opacity for Year of Establishment -->
+          <h4>Year of Establishment</h4>
+          <div class="legend-item">
+            <span class="legend-color" style="opacity: 0.3"></span> 1930s -
+            1950s
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="opacity: 0.5"></span> 1950s -
+            1970s
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="opacity: 0.7"></span> 1975 - 1990
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="opacity: 0.9"></span> 1990 -
+            Present
+          </div>
+
+          <!-- Outline Colors for "التصنيف الحالي للأرض في الخرائط الرسمية" -->
+          <h4>Land Classification ("التصنيف الحالي للأرض")</h4>
+          <div class="legend-item">
+            <span class="legend-outline" style="border-color: #008000"></span>
+            Agricultural ("زراعي")
+          </div>
+          <div class="legend-item">
+            <span class="legend-outline" style="border-color: #0000ff"></span>
+            Residential ("سكني")
+          </div>
+          <div class="legend-item">
+            <span class="legend-outline" style="border-color: #ffa500"></span>
+            Mixed Use ("سكني \\ تجاري")
+          </div>
+          <div class="legend-item">
+            <span class="legend-outline" style="border-color: #800080"></span>
+            Tourism ("سياحي")
+          </div>
+          <div class="legend-item">
+            <span class="legend-outline" style="border-color: #808080"></span>
+            Unclassified ("غير مصنف")
+          </div>
+        </div>
       </div>
 
       <div class="box-row">
@@ -127,40 +169,40 @@ export default {
           }
         }
 
-        // Function to load SVG patterns
-        function loadSvgPattern(map, patternName, svgPath) {
-          // Check if the image already exists
-          if (map.hasImage(patternName)) {
-            console.log(`Image "${patternName}" already exists.`);
-            return;
-          }
+        // // Function to load SVG patterns
+        // function loadSvgPattern(map, patternName, svgPath) {
+        //   // Check if the image already exists
+        //   if (map.hasImage(patternName)) {
+        //     console.log(`Image "${patternName}" already exists.`);
+        //     return;
+        //   }
 
-          var img = new Image();
-          img.crossOrigin = "Anonymous"; // Prevent CORS issues
+        //   var img = new Image();
+        //   img.crossOrigin = "Anonymous"; // Prevent CORS issues
 
-          img.onload = function () {
-            var canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-            var pngUrl = canvas.toDataURL("image/png");
+        //   img.onload = function () {
+        //     var canvas = document.createElement("canvas");
+        //     canvas.width = img.width;
+        //     canvas.height = img.height;
+        //     var ctx = canvas.getContext("2d");
+        //     ctx.drawImage(img, 0, 0);
+        //     var pngUrl = canvas.toDataURL("image/png");
 
-            map.loadImage(pngUrl, function (error, image) {
-              if (error) {
-                console.error("Error loading image into Mapbox:", error);
-                return;
-              }
-              map.addImage(patternName, image);
-            });
-          };
+        //     map.loadImage(pngUrl, function (error, image) {
+        //       if (error) {
+        //         console.error("Error loading image into Mapbox:", error);
+        //         return;
+        //       }
+        //       map.addImage(patternName, image);
+        //     });
+        //   };
 
-          img.onerror = function () {
-            console.error(`Failed to load image from path: ${svgPath}`);
-          };
+        //   img.onerror = function () {
+        //     console.error(`Failed to load image from path: ${svgPath}`);
+        //   };
 
-          img.src = svgPath; // Set the source to the SVG path
-        }
+        //   img.src = svgPath; // Set the source to the SVG path
+        // }
 
         // Listen for missing image event and dynamically add the image
         map.on("styleimagemissing", function (e) {
@@ -170,21 +212,21 @@ export default {
           }
         });
 
-        // Patterns
-        var patterns = {
-          "pattern-palcamp": "/images/pattern-palcamp.svg",
-          hideout: "/images/hideout.svg",
-          "polka-dots": "/images/polka-dots.svg",
-          chevron: "/images/chevron.svg",
-          diagonalcross: "/images/diagonalcross.svg",
-          grid: "/images/grid.svg",
-          cross: "/images/cross.svg",
-        };
+        // // Patterns
+        // var patterns = {
+        //   "pattern-palcamp": "/images/pattern-palcamp.svg",
+        //   hideout: "/images/hideout.svg",
+        //   "polka-dots": "/images/polka-dots.svg",
+        //   chevron: "/images/chevron.svg",
+        //   diagonalcross: "/images/diagonalcross.svg",
+        //   grid: "/images/grid.svg",
+        //   cross: "/images/cross.svg",
+        // };
 
-        // Load patterns dynamically
-        for (const [patternName, svgPath] of Object.entries(patterns)) {
-          loadSvgPattern(map, patternName, svgPath);
-        }
+        // // Load patterns dynamically
+        // for (const [patternName, svgPath] of Object.entries(patterns)) {
+        //   loadSvgPattern(map, patternName, svgPath);
+        // }
         // map.addImage("pattern-palcamp", "./images/pattern-palcamp.svg");
 
         //added informality map
@@ -203,16 +245,16 @@ export default {
             paint: {
               "fill-color": [
                 "match",
-                ["get", "سنة النشوء بعلاقتها مع النوع"],
-                "1930s - 1950s بدأت كمخيمات للاجئين / مناطق لإسكان اللاجئين ذوي الدخل المنخفض",
-                "#FF6347", // tomato color
-                "1950s - 1970s بدأت كمناطق سكنية للمهاجرين من الريف إلى المدينة",
-                "#4682B4", // steelblue color
-                "1975 - 1990 بدأت خلال الحرب اللبنانية",
-                "#32CD32", // limegreen color
-                "1990 - اليوم بدأت جراء المعارك المتتالية والهجرات الناتجة عنها",
-                "#FFD700", // gold color
-                /* default */ "#808080", // gray for other/unmatched
+                ["get", "ملكية الأرض"],
+                "عام",
+                "#FFD700", // gold for public
+                "خاص",
+                "#FF6347", // tomato for private
+                "وقف",
+                "#32CD32", // limegreen for Waqf
+                "عام - خاص",
+                "#4682B4", // steelblue for mixed
+                /* default */ "#808080", // gray for unmatched cases
               ],
 
               // random colors :)
@@ -222,45 +264,72 @@ export default {
               //   ["%", ["*", ["get", "fid"], 330], 255], // Green channel based on fid
               //   ["%", ["*", ["get", "fid"], 550], 255], // Blue channel based on fid
               // ],
-              "fill-opacity": 0.7,
+              "fill-opacity": [
+                "match",
+                ["get", "سنة النشوء بعلاقتها مع النوع"],
+                "1930s - 1950s بدأت كمخيمات للاجئين / مناطق لإسكان اللاجئين ذوي الدخل المنخفض",
+                0.3,
+                "1950s - 1970s بدأت كمناطق سكنية للمهاجرين من الريف إلى المدينة",
+                0.5,
+                "1975 - 1990 بدأت خلال الحرب اللبنانية",
+                0.7,
+                "1990 - اليوم بدأت جراء المعارك المتتالية والهجرات الناتجة عنها",
+                0.9,
+                /* default */ 0.3,
+              ],
+              "line-color": [
+                "match",
+                ["get", "التصنيف الحالي للأرض في الخرائط الرسمية"],
+                "زراعي",
+                "#008000", // green for agricultural
+                "سكني",
+                "#0000FF", // blue for residential
+                "سكني \\ تجاري mixed use",
+                "#FFA500", // orange for mixed use
+                "سياحي",
+                "#800080", // purple for tourism
+                "غير مصنف",
+                "#808080", // gray for unclassified
+                /* default */ "#000000", // black for unmatched cases
+              ],
             },
           },
           firstSymbolId
         );
 
-        map.addLayer(
-          {
-            id: "poly-pattern",
-            type: "fill",
-            source: "places", // reference the data source
-            layout: {},
-            paint: {
-              "fill-pattern": [
-                "match",
-                ["get", "الوصول إلى الأرض"],
-                "مخيم فلسطيني",
-                "pattern-palcamp", // Tomato color pattern
-                "مخيم أرمني",
-                "hideout", // Steelblue color pattern
-                "تجمع فلسطيني",
-                "polka-dots", // Limegreen color pattern
-                "مشروع للأرمن",
-                "chevron", // Gold color pattern
-                "إفراز غير رسمي للأراضي في ضواحي المدن",
-                "diagonalcross", // Blueviolet color pattern
-                "وضع اليد في أراضي متنازع على ملكيّتها",
-                "grid", // Orangered color pattern
-                "وضع اليد في مشاريع الإسكان العام",
-                "cross", // Seagreen color pattern
-                /* default */ "polka-dots", // Gray pattern for unmatched cases
-              ],
+        // map.addLayer(
+        //   {
+        //     id: "poly-pattern",
+        //     type: "fill",
+        //     source: "places", // reference the data source
+        //     layout: {},
+        //     paint: {
+        //       "fill-pattern": [
+        //         "match",
+        //         ["get", "الوصول إلى الأرض"],
+        //         "مخيم فلسطيني",
+        //         "pattern-palcamp", // Tomato color pattern
+        //         "مخيم أرمني",
+        //         "hideout", // Steelblue color pattern
+        //         "تجمع فلسطيني",
+        //         "polka-dots", // Limegreen color pattern
+        //         "مشروع للأرمن",
+        //         "chevron", // Gold color pattern
+        //         "إفراز غير رسمي للأراضي في ضواحي المدن",
+        //         "diagonalcross", // Blueviolet color pattern
+        //         "وضع اليد في أراضي متنازع على ملكيّتها",
+        //         "grid", // Orangered color pattern
+        //         "وضع اليد في مشاريع الإسكان العام",
+        //         "cross", // Seagreen color pattern
+        //         /* default */ "polka-dots", // Gray pattern for unmatched cases
+        //       ],
 
-              "fill-opacity": 1,
-              "fill-pattern-transform": ["scale", 0.8, 0.8],
-            },
-          },
-          "poly"
-        );
+        //       "fill-opacity": 1,
+        //       "fill-pattern-transform": ["scale", 0.8, 0.8],
+        //     },
+        //   },
+        //   "poly"
+        // );
 
         // Outline layer
         map.addLayer(
@@ -270,8 +339,22 @@ export default {
             source: "places", // reference the data source
             layout: {},
             paint: {
-              "line-color": "#000", // outline color
-              "line-width": 0.5, // outline width
+              "line-color": [
+                "match",
+                ["get", "التصنيف الحالي للأرض في الخرائط الرسمية"],
+                "زراعي",
+                "#008000", // green for agricultural
+                "سكني",
+                "#0000FF", // blue for residential
+                "سكني \\ تجاري mixed use",
+                "#FFA500", // orange for mixed use
+                "سياحي",
+                "#800080", // purple for tourism
+                "غير مصنف",
+                "#808080", // gray for unclassified
+                /* default */ "#000000", // black for unmatched cases
+              ],
+              "line-width": 1, // outline width
             },
           },
           firstSymbolId
@@ -296,7 +379,7 @@ export default {
         });
 
         // Create the reset button
-        const menuFilter = document.getElementById("menu-filter");
+        const menuFilter = document.getElementById("reset-filter");
         const resetButton = document.createElement("button");
         resetButton.textContent = "Reset Filters";
         resetButton.style.marginBottom = "10%";
@@ -311,7 +394,7 @@ export default {
           "click",
           handleResetButtonClick.bind(this)
         );
-        resetButton.classList.add("legend-button");
+        resetButton.classList.add("reset-button");
         menuFilter.appendChild(resetButton);
 
         // //added informality map
@@ -411,6 +494,7 @@ export default {
           citySelect.id = "citySelect";
           citySelect.classList.add("city-dropdown"); // Correct way to add a class
           citySelect.style.marginTop = "20px";
+          citySelect.style.direction = "rtl"; // Set direction to right-to-left
           citySelect.addEventListener("change", updateMapData);
 
           // List of cities in Lebanon
@@ -456,6 +540,9 @@ export default {
           rangeFilter.id = "rangeFilter";
           rangeFilter.classList.add("city-dropdown"); // Correct way to add a class
           rangeFilter.style.marginTop = "20px";
+          rangeFilter.multiple = true; // Allow multiple selections
+          rangeFilter.size = 3; // Optional: Set visible options at once
+          rangeFilter.style.direction = "rtl"; // Set direction to right-to-left
           rangeFilter.addEventListener("change", updateMapData);
 
           const dateRanges = [
@@ -475,6 +562,61 @@ export default {
           });
 
           filterGroup2.appendChild(rangeFilter);
+
+          const filterGroup3 = document.getElementById("filter-group3");
+          // Create and configure the city dropdown
+          const landOwnership = document.createElement("select");
+          landOwnership.id = "landOwnership";
+          landOwnership.classList.add("city-dropdown"); // Correct way to add a class
+          landOwnership.style.marginTop = "20px";
+          landOwnership.multiple = true; // Allow multiple selections
+          landOwnership.size = 3;
+          landOwnership.style.direction = "rtl"; // Set direction to right-to-left
+          landOwnership.addEventListener("change", updateMapData);
+
+          const landOwnershipRanges = ["", "عام", "خاص", "وقف", "عام - خاص"];
+
+          // Create an option for each city and append to the dropdown
+          landOwnershipRanges.forEach((landOwnershipRange) => {
+            const option = document.createElement("option");
+            option.value = landOwnershipRange;
+            option.textContent = landOwnershipRange;
+            landOwnership.appendChild(option);
+          });
+
+          filterGroup3.appendChild(landOwnership);
+
+          const filterGroup4 = document.getElementById("filter-group4");
+          // Create and configure the city dropdown
+          const accessType = document.createElement("select");
+          accessType.id = "accessType";
+          accessType.classList.add("city-dropdown"); // Correct way to add a class
+          accessType.style.marginTop = "20px";
+          accessType.multiple = true; // Allow multiple selections
+          accessType.size = 3;
+          accessType.style.direction = "rtl"; // Set direction to right-to-left
+          accessType.addEventListener("change", updateMapData);
+
+          const accessTypeRanges = [
+            "",
+            "إفراز غير رسمي للأراضي في ضواحي المدن",
+            "تجمع فلسطيني",
+            "وضع اليد في أراضي خالية",
+            "مخيم فلسطيني",
+            "مخيم أرمني",
+            "مشروع للأرمن",
+            "وضع اليد في مباني مهجورة",
+          ];
+
+          // Create an option for each city and append to the dropdown
+          accessTypeRanges.forEach((accessTypeRange) => {
+            const option = document.createElement("option");
+            option.value = accessTypeRange;
+            option.textContent = accessTypeRange;
+            accessType.appendChild(option);
+          });
+
+          filterGroup4.appendChild(accessType);
 
           // // Coordinates for each city in Lebanon
           // const cityCoordinates = {
@@ -517,100 +659,12 @@ export default {
           //     });
           //   }
           // });
-
-          // Initialize button event listeners
-          document
-            .getElementById("prevButton1")
-            .addEventListener("click", function () {
-              // When 'Previous' is clicked on the first content
-              document.getElementById("contentBox1").style.display = "block";
-              document.getElementById("contentBox2").style.display = "none";
-              this.disabled = true; // Disable 'Previous' button in the first content
-              document.getElementById("nextButton1").disabled = false; // Enable 'Next' button in the first content
-            });
-
-          document
-            .getElementById("nextButton1")
-            .addEventListener("click", function () {
-              // When 'Next' is clicked on the first content
-              document.getElementById("contentBox1").style.display = "none";
-              document.getElementById("contentBox2").style.display = "block";
-              document.getElementById("menu-filter2").style.display = "block";
-              document.getElementById("prevButton2").disabled = false; // Enable 'Previous' button in the second content
-              this.disabled = true; // Disable 'Next' button in the first content
-            });
-
-          document
-            .getElementById("prevButton2")
-            .addEventListener("click", function () {
-              // When 'Previous' is clicked on the second content
-              document.getElementById("contentBox2").style.display = "none";
-              document.getElementById("contentBox1").style.display = "block";
-              document.getElementById("nextButton1").disabled = false; // Enable 'Next' button in the first content
-              this.disabled = true; // Disable 'Previous' button in the second content
-            });
-
-          updateButtons();
-        }
-
-        // // Function to handle "Previous" button click
-        // function showPreviousContent() {
-        //   // Show the first content box and hide the second one
-        //   document.getElementById("contentBox1").style.display = "block";
-        //   document.getElementById("contentBox2").style.display = "none";
-        //   updateButtons();
-        // }
-
-        // Function to update button states
-        function updateButtons() {
-          // Disables the previous button in the first box
-          document.getElementById("prevButton1").disabled = true;
-          // Disables the next button in the second box
-          document.getElementById("nextButton2").disabled = true;
         }
 
         // Function to update the map based on the selected city
         function updateMapData() {
+          //update city selection
           const selectedCity = document.getElementById("citySelect").value;
-          const selectedDateRange =
-            document.getElementById("rangeFilter").value;
-
-          // Check if the content2 menu is active
-          const content2Menu = document.getElementById("contentBox2");
-
-          if (content2Menu && content2Menu.style.display === "block") {
-            // Only apply the filter if we are in the content2 menu
-            if (selectedDateRange === "") {
-              // If the first option (empty string) is selected, show all data
-              map.setFilter("poly", null);
-            } else {
-              // Apply the filter for the selected date range
-              map.setFilter("poly", [
-                "==",
-                ["get", "سنة النشوء بعلاقتها مع النوع"],
-                selectedDateRange,
-              ]);
-            }
-          }
-          // // Fetch and filter your GeoJSON data based on the selected date range
-          // fetch("./beirut-informalitymap.geojson")
-          //   .then((response) => response.json())
-          //   .then((data) => {
-          //     // Filter features based on the selected date range
-          //     const filteredFeatures = data.features.filter((feature) => {
-          //       return (
-          //         feature.properties["سنة النشوء بعلاقتها مع النوع"] ===
-          //         selectedDateRange
-          //       );
-          //     });
-
-          //     // Update the source data
-          //     map.getSource("places").setData({
-          //       type: "FeatureCollection",
-          //       features: filteredFeatures,
-          //     });
-          //   });
-
           const cityCoordinates = {
             بيروت: [35.4955, 33.8888],
             طرابلس: [35.8456, 34.4367],
@@ -628,6 +682,164 @@ export default {
             const [lng, lat] = cityCoordinates[selectedCity];
             map.flyTo({ center: [lng, lat], zoom: 12 }); // Adjust zoom level as needed
           }
+
+          const rangeFilter = document.getElementById("rangeFilter");
+          const selectedDateRanges = Array.from(
+            rangeFilter.selectedOptions
+          ).map((option) => option.value);
+
+          const landOwnership = document.getElementById("landOwnership");
+          const selectedLandProperties = Array.from(
+            landOwnership.selectedOptions
+          ).map((option) => option.value);
+
+          const accessType = document.getElementById("accessType");
+          const selectedAccessTypes = Array.from(
+            accessType.selectedOptions
+          ).map((option) => option.value);
+
+          let filters = ["all"];
+
+          // Add filter for date ranges (سنة النشوء بعلاقتها مع النوع) as a union (OR)
+          if (selectedDateRanges.length > 0 && selectedDateRanges[0] !== "") {
+            console.log("Selected Date Ranges: ", selectedDateRanges);
+            filters.push([
+              "match",
+              ["get", "سنة النشوء بعلاقتها مع النوع"],
+              selectedDateRanges, // Array of selected ranges
+              true,
+              false,
+            ]);
+          }
+
+          // Add filter for land property ownership (ملكية الأرض) as a union (OR)
+          if (
+            selectedLandProperties.length > 0 &&
+            selectedLandProperties[0] !== ""
+          ) {
+            console.log("Selected Land Properties: ", selectedLandProperties);
+            filters.push([
+              "match",
+              ["get", "ملكية الأرض"],
+              selectedLandProperties, // Array of selected properties
+              true,
+              false,
+            ]);
+          }
+
+          // Add filter for access type (نوع الوصول إلى الأرض) as a union (OR)
+          if (selectedAccessTypes.length > 0 && selectedAccessTypes[0] !== "") {
+            console.log("Selected Access Types: ", selectedAccessTypes);
+            filters.push([
+              "match",
+              ["get", "الوصول إلى الأرض"],
+              selectedAccessTypes, // Array of selected access types
+              true,
+              false,
+            ]);
+          }
+
+          // Apply the combined filter only if at least one filter is active
+          if (filters.length > 1) {
+            console.log("Filters applied: ", filters);
+            map.setFilter("poly", filters);
+          } else {
+            // If no filters are applied, show all data
+            map.setFilter("poly", null);
+          }
+
+          //   const rangeFilter = document.getElementById("rangeFilter");
+          //   const selectedDateRange =
+          //     document.getElementById("rangeFilter").value;
+          //   // const selectedDateRange = rangeFilter.value;
+          //   const landOwnership = document.getElementById("landOwnership");
+          //   const selectedlandproperty = landOwnership.value;
+          //   const accessType = document.getElementById("accessType");
+          //   const selectedAccessType = accessType.value;
+          //   let filters = ["all"];
+
+          //   // Add filter for date range (سنة النشوء بعلاقتها مع النوع)
+          //   if (rangeFilter && selectedDateRange !== "") {
+          //     filters.push([
+          //       "==",
+          //       ["get", "سنة النشوء بعلاقتها مع النوع"],
+          //       selectedDateRange,
+          //     ]);
+          //   }
+
+          //   // Add filter for land property ownership (ملكية الأرض)
+          //   if (selectedlandproperty !== "") {
+          //     filters.push([
+          //       "match",
+          //       ["get", "ملكية الأرض"],
+          //       selectedlandproperty,
+          //       true,
+          //       false,
+          //     ]);
+          //   }
+
+          //   // Add filter for access type (نوع الوصول إلى الأرض)
+          //   if (selectedAccessType !== "") {
+          //     filters.push([
+          //       "match",
+          //       ["get", "نوع الوصول إلى الأرض"],
+          //       selectedAccessType,
+          //       true,
+          //       false,
+          //     ]);
+          //   }
+
+          //   // Apply the combined filter only if at least one filter is active
+          //   if (filters.length > 1) {
+          //     map.setFilter("poly", filters);
+          //   } else {
+          //     // If no filters are applied, show all data
+          //     map.setFilter("poly", null);
+          //   }
+          // }
+
+          // // Function to update the map based on the selected city
+          // function filterbyrange() {
+          //   const rangeFilter = document.getElementById("rangeFilter");
+          //   const selectedDateRange =
+          //     document.getElementById("rangeFilter").value;
+
+          //   if (rangeFilter) {
+          //     // Only apply the filter if we are in the content2 menu
+          //     if (selectedDateRange === "") {
+          //       // If the first option (empty string) is selected, show all data
+          //       map.setFilter("poly", null);
+          //     } else {
+          //       // Apply the filter for the selected date range
+          //       map.setFilter("poly", [
+          //         "==",
+          //         ["get", "سنة النشوء بعلاقتها مع النوع"],
+          //         selectedDateRange,
+          //       ]);
+          //     }
+          //   }
+          // }
+
+          //  // Function to update the map based on the selected city
+          // function filterbylandproperty() {
+          //   const landOwnership = document.getElementById("");
+          //   const selectedDateRange =
+          //     document.getElementById("rangeFilter").value;
+
+          //   if (rangeFilter) {
+          //     // Only apply the filter if we are in the content2 menu
+          //     if (selectedDateRange === "") {
+          //       // If the first option (empty string) is selected, show all data
+          //       map.setFilter("poly", null);
+          //     } else {
+          //       // Apply the filter for the selected date range
+          //       map.setFilter("poly", [
+          //         "==",
+          //         ["get", "سنة النشوء بعلاقتها مع النوع"],
+          //         selectedDateRange,
+          //       ]);
+          //     }
+          //   }
         }
 
         // Initialize city selection on page load
@@ -635,14 +847,42 @@ export default {
 
         // Function to handle reset button click
         function handleResetButtonClick() {
-          // Clear the filter on the 'poly' layer to show all features
+          // Reset any filter on the 'poly' layer to show all features
           if (map.getLayer("poly")) {
-            map.setFilter("poly", null); // This will remove any filters applied and show all features
+            map.setFilter("poly", null); // This removes any filters applied and shows all features
           }
 
-          // If you need to reapply a specific filter or refresh data, call updateMapData
-          // updateMapData(); // Uncomment if you need to call this to reset or refresh other parts
+          // Clear city and range filter dropdowns
+          document.getElementById("citySelect").value = ""; // Reset city selection
+          document.getElementById("rangeFilter").value = ""; // Reset date range selection
+
+          // Reset the GeoJSON source data to its full set (without filtering)
+          fetch("./beirut-informalitymap.geojson")
+            .then((response) => response.json())
+            .then((data) => {
+              // Update the source with the original full dataset
+              map.getSource("places").setData({
+                type: "FeatureCollection",
+                features: data.features,
+              });
+            });
+
+          // Optionally, fly back to the default center or zoom level after reset
+          map.flyTo({ center: [35.4955, 33.8888], zoom: 12 }); // Default to Beirut or desired center/zoom
         }
+
+        // // Function to handle reset button click
+        // function handleResetButtonClick() {
+        //   // Clear the filter on the 'poly' layer to show all features
+        //   if (map.getLayer("poly")) {
+        //     map.setFilter("poly", null); // This will remove any filters applied and show all features
+        //   }
+        //   map.setFilter("poly", null);
+        //   // initializeCitySelection();
+
+        //   // If you need to reapply a specific filter or refresh data, call updateMapData
+        //   updateMapData(); // Uncomment if you need to call this to reset or refresh other parts
+        // }
 
         // // Function to update button states
         // function updateButtons() {
@@ -655,8 +895,6 @@ export default {
         //   // Disable "Next" button if at the last city
         //   nextButton.disabled = currentCityIndex === cities.length - 1;
         // }
-
-        // initializeCitySelection();
 
         // document
         //   .getElementById("prevButton")
@@ -766,12 +1004,6 @@ export default {
         // const geojsonData = map.getSource('poly')._data;
 
         // // Now you have access to the features
-        // const features = geojsonData.features;
-
-        //           console.log(features);
-
-        // calculateStrikeTypeCounts(features);
-        // }
 
         map.on("mousemove", "poly", function (e) {
           if (e.features[0]) {
@@ -1126,7 +1358,7 @@ body {
   display: flex;
   flex-direction: column; /* Align items vertically */
   width: 200px;
-  height: 32vh;
+  height: 80vh;
   padding: 20px;
   z-index: 100000;
   justify-content: flex-start; /* Align items to the top */
@@ -1156,11 +1388,14 @@ body {
 
 /* Styles for .boxB */
 .boxB {
-  position: relative; /* Ensure children are positioned relative to this */
+  position: absolute; /* Ensure children are positioned relative to this */
+  right: 1%;
+  bottom: 1%;
   display: flex;
+  z-index: 100000;
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
-  width: 100%; /* Ensure it takes full width */
+  width: auto; /* Ensure it takes full width */
   height: auto;
 }
 
@@ -1303,44 +1538,22 @@ body {
   transform: scale(1.05); /* Slightly enlarge on hover */
 }
 
-/* Specific styles for 'Previous' buttons */
-.prevButton {
-  /* Add any specific styles for 'Previous' buttons here if needed */
-}
-
-/* Specific styles for 'Next' buttons */
-.nextButton {
-  /* Add any specific styles for 'Next' buttons here if needed */
-}
-
 /* Styles for .content */
 .content {
   flex: 1; /* Take up remaining space */
 }
 /* Styles for #filter-group */
 #filter-group {
-  margin-bottom: 30px; /* Add some spacing below */
-}
-.menu-navigation-class {
-  top: 30%;
+  margin-bottom: 5px; /* Add some spacing below */
 }
 
 /* CSS for menu-navigation */
-.menu-filter {
+.reset-filter {
   display: flex;
   flex-direction: column; /* Stack buttons vertically */
   align-items: center; /* Center buttons horizontally */
   gap: 10px; /* Space between buttons */
   margin-bottom: 20px; /* Space below the menu */
-}
-
-/* Styles for #menu-navigation */
-#menu-navigation {
-  display: flex;
-  justify-content: space-between; /* Evenly distribute buttons */
-  gap: 10px; /* Space between buttons */
-  width: 100%; /* Full width of the parent */
-  padding: 10px; /* Optional: add padding for better appearance */
 }
 
 /* Style for the city dropdown */
@@ -1430,7 +1643,7 @@ body {
   direction: rtl !important;
 }
 .note {
-  margin-left: 15px;
+  margin-left: 2px;
   margin-right: 5px;
   align-content: center;
   text-align: center;
@@ -1505,99 +1718,49 @@ body {
 }
 
 /* legend styling */
-.legend {
-  position: absolute;
-  width: 155px;
-  top: 0px;
-  left: 40px;
-  background-color: rgba(255, 255, 255, 0.8);
+#legend {
+  background-color: white;
   padding: 10px;
-  border-radius: 5px;
-  /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
-  /* display: flex; */
-  transition: height 0.5s ease; /* Add smooth transition for height change */
-  border: 1px solid #000; /* Outline for the legend */
-  gap: 2px;
-  /*width: fit-content;  Adjust width as needed */
+  border: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+}
+
+#legend h3,
+#legend h4 {
+  margin: 10px 0;
+  font-size: 16px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-}
-@media screen and (max-width: 767px) {
-  .legend-item {
-    margin-bottom: 1px;
-  }
 }
 
-.legend-item.clicked {
-  transform: translateY(2px); /* Simulate pushed button */
-}
-
-.legend-item img {
+.legend-color {
   width: 20px;
   height: 20px;
-  margin-left: 5px;
-  transition: transform 0.3s ease, filter 0.3s ease;
-}
-/* Style for clicked items */
-.legend .legend-item.clicked img {
-  /* Styles for clicked state */
-  filter: grayscale(100%) brightness(50%);
+  margin-right: 10px;
+  background-color: gray; /* default color */
+  border: 1px solid #000;
 }
 
-/* @media screen and (max-width: 767px) {
-  .legend-item img {
-    width: 10px;
-    height: 10px;
-  }
-} */
-.legend-item label {
-  font-size: 12px;
-  cursor: pointer;
-  /* margin-right: 5px; Adjust the margin as needed to create space */
-}
-@media screen and (max-width: 767px) {
-  .legend-teml label {
-    font-size: 10px;
-    font-weight: bold;
-  }
-}
-.legend .legend-item.clicked label {
-  transform: translateY(2px); /* Simulate pushed button */
+.legend-outline {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 2px solid black; /* default border color */
+  background-color: transparent;
 }
 
 /* legend buttons */
 @media screen and (max-width: 767px) {
-  .legend-button {
+  .reset-button {
     width: 140px !important; /* Adjust width for smaller screens */
     margin-left: -10px !important; /*Adjust margin for smaller screens */
     font-size: 10px;
   }
 }
-
-.legend-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-}
-
-.legend-content {
-  display: block;
-  direction: rtl;
-  /* Adjust the height and style as per your need */
-}
-/* @media screen and (max-width: 767px) {
-  .legend-content {
-    font-size: 5px;
-  }
-}*/
 
 #minimizeBtn {
   border: none;
