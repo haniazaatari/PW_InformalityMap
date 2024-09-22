@@ -4,6 +4,8 @@
       <div class="box" id="contentBox">
         <p class="note"><strong>إختر/ي المدينة</strong></p>
 
+        <div class="tooltip" id="tooltip" style="display: none"></div>
+
         <nav id="filter-group" class="filter-group"></nav>
         <p class="note"><strong>إختر/ي سنة النشوء بعلاقتها مع النوع</strong></p>
 
@@ -20,30 +22,30 @@
           <h3>Legend</h3>
 
           <!-- Fill Color for "ملكية الأرض" -->
-          <h4>Land Ownership ("ملكية الأرض")</h4>
+          <h4>ملكية الأرض</h4>
           <div class="legend-item">
             <span class="legend-color" style="background-color: #ffd700"></span>
-            Public ("عام")
+            عام
           </div>
           <div class="legend-item">
             <span class="legend-color" style="background-color: #ff6347"></span>
-            Private ("خاص")
+            خاص
           </div>
           <div class="legend-item">
             <span class="legend-color" style="background-color: #32cd32"></span>
-            Waqf ("وقف")
+            وقف
           </div>
           <div class="legend-item">
             <span class="legend-color" style="background-color: #4682b4"></span>
-            Public-Private ("عام - خاص")
+            عام - خاص
           </div>
-          <div class="legend-item">
+          <!-- <div class="legend-item">
             <span class="legend-color" style="background-color: #808080"></span>
             Other
-          </div>
+          </div> -->
 
           <!-- Opacity for Year of Establishment -->
-          <h4>Year of Establishment</h4>
+          <h4>سنة النشوء</h4>
           <div class="legend-item">
             <span class="legend-color" style="opacity: 0.3"></span> 1930s -
             1950s
@@ -61,27 +63,27 @@
           </div>
 
           <!-- Outline Colors for "التصنيف الحالي للأرض في الخرائط الرسمية" -->
-          <h4>Land Classification ("التصنيف الحالي للأرض")</h4>
+          <h4>التصنيف الحالي للأرض</h4>
           <div class="legend-item">
             <span class="legend-outline" style="border-color: #008000"></span>
-            Agricultural ("زراعي")
+            زراعي
           </div>
           <div class="legend-item">
             <span class="legend-outline" style="border-color: #0000ff"></span>
-            Residential ("سكني")
+            سكني
           </div>
           <div class="legend-item">
             <span class="legend-outline" style="border-color: #ffa500"></span>
-            Mixed Use ("سكني \\ تجاري")
+            سكني \ تجاري
           </div>
           <div class="legend-item">
             <span class="legend-outline" style="border-color: #800080"></span>
-            Tourism ("سياحي")
+            سياحي
           </div>
-          <div class="legend-item">
+          <!-- <div class="legend-item">
             <span class="legend-outline" style="border-color: #808080"></span>
             Unclassified ("غير مصنف")
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -493,7 +495,7 @@ export default {
           const citySelect = document.createElement("select");
           citySelect.id = "citySelect";
           citySelect.classList.add("city-dropdown"); // Correct way to add a class
-          citySelect.style.marginTop = "20px";
+          //citySelect.style.marginTop = "20px";
           citySelect.style.direction = "rtl"; // Set direction to right-to-left
           citySelect.addEventListener("change", updateMapData);
 
@@ -534,12 +536,15 @@ export default {
           // Append the city dropdown to the filter group
           filterGroup1.appendChild(citySelect);
 
+          // Create a tooltip variable
+          const tooltip = document.getElementById("tooltip");
+
           const filterGroup2 = document.getElementById("filter-group2");
           // Create and configure the city dropdown
           const rangeFilter = document.createElement("select");
           rangeFilter.id = "rangeFilter";
           rangeFilter.classList.add("city-dropdown"); // Correct way to add a class
-          rangeFilter.style.marginTop = "20px";
+          //rangeFilter.style.marginTop = "20px";
           rangeFilter.multiple = true; // Allow multiple selections
           rangeFilter.size = 3; // Optional: Set visible options at once
           rangeFilter.style.direction = "rtl"; // Set direction to right-to-left
@@ -564,12 +569,28 @@ export default {
 
           filterGroup2.appendChild(rangeFilter);
 
+          rangeFilter.addEventListener("change", (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            tooltip.textContent = selectedOption.title; // Show tooltip text
+            tooltip.style.display = "block"; // Show tooltip
+          });
+
+          rangeFilter.addEventListener("blur", () => {
+            tooltip.style.display = "none"; // Hide tooltip
+          });
+
+          // Position the tooltip
+          rangeFilter.addEventListener("mousemove", (e) => {
+            tooltip.style.left = `${e.pageX}px`;
+            tooltip.style.top = `${e.pageY - 30}px`; // Adjust for tooltip height
+          });
+
           const filterGroup3 = document.getElementById("filter-group3");
           // Create and configure the city dropdown
           const landOwnership = document.createElement("select");
           landOwnership.id = "landOwnership";
           landOwnership.classList.add("city-dropdown"); // Correct way to add a class
-          landOwnership.style.marginTop = "20px";
+          //landOwnership.style.marginTop = "20px";
           landOwnership.multiple = true; // Allow multiple selections
           landOwnership.size = 3;
           landOwnership.style.direction = "rtl"; // Set direction to right-to-left
@@ -588,12 +609,28 @@ export default {
 
           filterGroup3.appendChild(landOwnership);
 
+          landOwnership.addEventListener("change", (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            tooltip.textContent = selectedOption.title; // Show tooltip text
+            tooltip.style.display = "block"; // Show tooltip
+          });
+
+          landOwnership.addEventListener("blur", () => {
+            tooltip.style.display = "none"; // Hide tooltip
+          });
+
+          // Position the tooltip
+          landOwnership.addEventListener("mousemove", (e) => {
+            tooltip.style.left = `${e.pageX}px`;
+            tooltip.style.top = `${e.pageY - 30}px`; // Adjust for tooltip height
+          });
+
           const filterGroup4 = document.getElementById("filter-group4");
           // Create and configure the city dropdown
           const accessType = document.createElement("select");
           accessType.id = "accessType";
           accessType.classList.add("city-dropdown"); // Correct way to add a class
-          accessType.style.marginTop = "20px";
+          //accessType.style.marginTop = "20px";
           accessType.multiple = true; // Allow multiple selections
           accessType.size = 3;
           accessType.style.direction = "rtl"; // Set direction to right-to-left
@@ -620,6 +657,22 @@ export default {
           });
 
           filterGroup4.appendChild(accessType);
+
+          accessType.addEventListener("change", (e) => {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            tooltip.textContent = selectedOption.title; // Show tooltip text
+            tooltip.style.display = "block"; // Show tooltip
+          });
+
+          accessType.addEventListener("blur", () => {
+            tooltip.style.display = "none"; // Hide tooltip
+          });
+
+          // Position the tooltip
+          accessType.addEventListener("mousemove", (e) => {
+            tooltip.style.left = `${e.pageX}px`;
+            tooltip.style.top = `${e.pageY - 30}px`; // Adjust for tooltip height
+          });
 
           // // Coordinates for each city in Lebanon
           // const cityCoordinates = {
@@ -1406,22 +1459,6 @@ body {
   height: auto;
 }
 
-/* Media Query for smaller screens */
-@media screen and (max-width: 767px) {
-  .box {
-    width: 154px;
-    height: 209px;
-    align-content: flex-start !important;
-    justify-content: space-around;
-  }
-
-  .boxB {
-    bottom: 7%;
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for centering */
-  }
-}
-
 .minimized {
   display: none;
   /* height: 50px; Define the height when box is minimized */
@@ -1453,15 +1490,25 @@ body {
   direction: rtl !important;
 }
 
-@media screen and (max-width: 767px) {
+.tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  z-index: 1000;
+  pointer-events: none; /* Prevents tooltip from interfering with clicks */
+}
+
+/* @media screen and (max-width: 767px) {
   .title-Box {
     position: absolute;
     background-color: rgb(255, 255, 255);
-    /* outline: 2px black solid; */
+    /* outline: 2px black solid; 
     z-index: 10000;
     height: 60px;
-    /* height: Hug; */
-    /* width: 300px; */
+    /* height: Hug; 
+    /* width: 300px; 
     width: 30%;
     filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.20000000298023224));
     border-radius: 5px;
@@ -1470,7 +1517,7 @@ body {
     padding-top: 8px;
     padding-bottom: 8px;
     text-align: right;
-    /* vertical-align: text-middle;x   */
+    /* vertical-align: text-middle;x   
     display: flex;
     flex-direction: column;
     right: 40px;
@@ -1478,7 +1525,7 @@ body {
     font-size: 0.75em;
     direction: rtl !important;
   }
-}
+} */
 
 .boxC {
   position: absolute;
@@ -1503,11 +1550,11 @@ body {
   transition: height 0.5s ease; /*Add smooth transition for height change*/
   direction: rtl !important;
 }
-@media screen and (max-width: 767px) {
+/* @media screen and (max-width: 767px) {
   .boxC {
     bottom: 7%;
   }
-}
+} */
 
 /* Common styles for all navigation buttons */
 .navButton {
@@ -1566,6 +1613,7 @@ body {
 /* Style for the city dropdown */
 .city-dropdown {
   font-size: 1.5em; /* Increase font size */
+  margin-top: 20px; /* Add some spacing below */
   padding: 8px; /* Padding for better appearance */
   border: 1px solid #ccc; /* Border styling */
   border-radius: 4px; /* Rounded corners */
@@ -1625,11 +1673,11 @@ body {
   /* box-shadow: 0px 20px 25px -5px rgba(0, 0, 0, 0),
     0 10px 10px -5px rgba(0, 0, 0, 0.04); */
 }
-@media screen and (max-width: 767px) {
+/* @media screen and (max-width: 767px) {
   .box-row {
     bottom: 6%;
   }
-}
+} */
 
 .boxA {
   /* margin-left: 2rem;
@@ -1665,14 +1713,6 @@ body {
   direction: rtl !important;
 }
 
-@media screen and (max-width: 767px) {
-  .note {
-    font-size: 1.1em;
-    text-align: center !important;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-}
 .mapboxgl-popup {
   min-width: 100px !important;
   max-width: 270px !important;
@@ -1730,6 +1770,8 @@ body {
   padding: 10px;
   border: 1px solid #ccc;
   font-family: Arial, sans-serif;
+  max-width: 300px; /* Ensure legend doesn't overflow */
+  border-radius: 5px; /* Add subtle rounded corners */
 }
 
 #legend h3,
@@ -1741,7 +1783,7 @@ body {
 .legend-item {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 8px; /* Slightly larger margin for spacing */
 }
 
 .legend-color {
@@ -1750,6 +1792,7 @@ body {
   margin-right: 10px;
   background-color: gray; /* default color */
   border: 1px solid #000;
+  border-radius: 3px; /* Slight rounding for a modern look */
 }
 
 .legend-outline {
@@ -1758,15 +1801,15 @@ body {
   margin-right: 10px;
   border: 2px solid black; /* default border color */
   background-color: transparent;
+  border-radius: 3px;
 }
 
-/* legend buttons */
-@media screen and (max-width: 767px) {
-  .reset-button {
-    width: 140px !important; /* Adjust width for smaller screens */
-    margin-left: -10px !important; /*Adjust margin for smaller screens */
-    font-size: 10px;
-  }
+/* Hover effect for better interaction */
+.legend-item:hover .legend-color,
+.legend-item:hover .legend-outline {
+  opacity: 0.8;
+  transform: scale(1.1); /* Slightly enlarge on hover */
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 #minimizeBtn {
@@ -1819,5 +1862,133 @@ body {
 }
 .circleLegend .icon-item:last-child {
   margin-bottom: 0;
+}
+
+/* ends here */
+
+/* Media Query for smaller screens */
+@media screen and (max-width: 768px) {
+  .box {
+    width: 30%; /* Adjust the width as needed */
+    height: 360px; /* Or any smaller height */
+    margin: 10px auto; /* Center it with a smaller margin */
+    padding: 2px;
+    left: 68%;
+  }
+
+  .mapboxgl-ctrl {
+    font-size: 12px; /* Make controls smaller */
+  }
+  .legend {
+    font-size: 10px; /* Reduce legend text size */
+  }
+  .marker {
+    width: 15px; /* Reduce marker size */
+    height: 15px;
+  }
+
+  .boxB {
+    bottom: 1%;
+    right: 1%;
+    /* width: 30%; */
+    /* transform: translateX(-50%); */
+  }
+
+  .box .content {
+    padding: 5px; /* Reduce padding */
+    margin: 0; /* Eliminate unnecessary margins */
+  }
+
+  /* Title box adjustments */
+  .title-Box {
+    width: 80%;
+    height: 60px;
+    font-size: 1em;
+    right: 10px;
+  }
+
+  /* Box-row adjustments */
+  .box-row {
+    bottom: 6%;
+    left: 10px;
+  }
+
+  .legend {
+    position: absolute;
+    top: 10px;
+    right: 10px; /* Push legend to the right */
+    width: 150px; /* Adjust width if needed */
+  }
+
+  .option {
+    font-size: 10px; /* Reduce font size */
+    padding: 0px; /* Adjust padding if needed */
+    margin: 0px 0; /* Reduce margin */
+  }
+
+  .note {
+    margin-left: 1px;
+    margin-right: 1px;
+    font-size: 10px; /* Reduce font size */
+    padding: 0%; /* Adjust padding */
+    margin: 5px 0; /* Reduce margin */
+    text-align: center !important;
+    margin-bottom: 0.1rem;
+  }
+
+  .option,
+  .note {
+    width: auto; /* Ensure they resize based on content */
+    line-height: 1.3; /* Decrease line spacing if necessary */
+  }
+
+  .filter-group {
+    margin-bottom: 1px; /* Add some spacing below */
+  }
+
+  /* Style for the city dropdown */
+  .city-dropdown {
+    font-size: 0.9em; /* Increase font size */
+    margin-top: 5px;
+    padding: 2px; /* Padding for better appearance */
+    border: 1px solid #ccc; /* Border styling */
+    border-radius: 4px; /* Rounded corners */
+    width: 100%; /* Full width */
+  }
+
+  #legend {
+    max-width: 100%; /* Let it expand fully on smaller screens */
+    padding: 5px;
+  }
+
+  .legend-color,
+  .legend-outline {
+    width: 15px;
+    height: 15px;
+  }
+
+  #legend h3,
+  #legend h4 {
+    font-size: 10px; /* Decrease font size for mobile */
+    margin: 2px 0; /* Adjust margin for mobile */
+  }
+
+  .reset-button {
+    width: 100px !important; /* Adjust width for smaller screens */
+    /* margin-left: -10px !important; Adjust margin for smaller screens */
+    margin-bottom: 1px;
+    font-size: 10px;
+  }
+  .legend-item {
+    margin-bottom: 0px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  /* Adjust navigation button size */
+  .navButton {
+    padding: 8px 15px;
+    font-size: 0.85em;
+  }
 }
 </style>
